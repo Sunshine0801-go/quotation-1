@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SteelBid Comparator v2.0 — 견적 비교 시스템</title>
+<style>
+/* =========================================================
+   SteelBid Comparator v2.0 — Professional UI Skin
+   - 화면 내용/데이터/스크립트는 유지하고 시각 스타일만 개선
+   ========================================================= */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1E5B9F;--blueL:#EAF3FF;--blueD:#123A66;
+  --green:#2E7D47;--greenL:#EAF6EF;--greenD:#1D5930;
+  --amber:#B7791F;--amberL:#FFF4DE;--amberD:#7A4A0C;
+  --red:#D94A45;--redL:#FCEDED;
+  --purple:#6052C8;--purpleL:#F0EEFF;--purpleD:#40369A;
+  --gray:#667085;--grayL:#F2F4F7;
+  --ink:#182230;--muted:#667085;--subtle:#98A2B3;
+  --bd:#D9E0EA;--bd2:#E8EDF3;--bg:#F4F7FB;--card:#FFFFFF;--surf:#F8FAFC;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.10);
+  --shadow-md:0 8px 24px rgba(16,24,40,.08);
+  --shadow-lg:0 18px 42px rgba(16,24,40,.12);
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Pretendard","Apple SD Gothic Neo",sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(30,91,159,.10),transparent 340px),
+    linear-gradient(180deg,#F7FAFD 0%,var(--bg) 42%,#F5F7FA 100%);
+  color:var(--ink);font-size:13px;line-height:1.55;letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(16,24,40,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(16,24,40,.025) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(180deg,rgba(0,0,0,.6),transparent 55%);z-index:-1}
+::selection{background:rgba(30,91,159,.18)}
+::-webkit-scrollbar{height:10px;width:10px}
+::-webkit-scrollbar-track{background:#EEF2F6;border-radius:999px}
+::-webkit-scrollbar-thumb{background:#C7D0DD;border-radius:999px;border:2px solid #EEF2F6}
+::-webkit-scrollbar-thumb:hover{background:#A9B6C8}
+
+/* ── 상단바 ── */
+.topbar{
+  background:linear-gradient(135deg,#102A43 0%,#153E75 55%,#1E5B9F 100%);
+  border-bottom:1px solid rgba(255,255,255,.12);padding:0 22px;display:flex;align-items:center;gap:10px;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 10px 24px rgba(16,42,67,.18)
+}
+.logo{width:34px;height:34px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.topbar-t{font-size:15px;font-weight:750;color:#fff;letter-spacing:.01em}
+.ver-chip{font-size:10px;font-weight:700;background:rgba(234,243,255,.16);color:#DBEAFF;padding:3px 9px;border-radius:999px;border:1px solid rgba(219,234,255,.24)}
+.topbar-note{font-size:11px;color:rgba(255,255,255,.68);margin-left:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── 탭 ── */
+.tabs{background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd2);display:flex;overflow-x:auto;position:sticky;top:58px;z-index:90;padding:0 16px;box-shadow:0 1px 0 rgba(16,24,40,.03)}
+.tab{padding:13px 14px;font-size:12px;font-weight:600;color:#697586;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;transition:all .18s ease;border-radius:10px 10px 0 0;margin-top:3px}
+.tab:hover{color:var(--blueD);background:#F5F9FF}
+.tab.on{font-weight:800;color:var(--blue);border-bottom-color:var(--blue);background:linear-gradient(180deg,#F7FBFF 0%,#fff 100%)}
+
+/* ── 콘텐츠 ── */
+.screen{display:none;padding:24px;max-width:1440px;margin:0 auto;animation:fadeIn .18s ease}
+.screen.on{display:block}
+@keyframes fadeIn{from{opacity:.65;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── 공통 유틸 ── */
+.row-hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px;gap:16px}
+.pg-t{font-size:21px;font-weight:800;color:#111827;letter-spacing:-.035em;display:flex;align-items:center;gap:8px}
+.bc{font-size:11px;color:#8A94A6;margin-bottom:5px;font-weight:600}
+.btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;background:#fff;color:#344054;border:1px solid var(--bd);border-radius:10px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .14s ease,box-shadow .14s ease,background .14s ease,border-color .14s ease,color .14s ease;min-height:32px}
+.btn.prim{background:linear-gradient(135deg,var(--blue) 0%,#286FB8 100%);color:#fff;border-color:transparent;font-weight:800;box-shadow:0 8px 16px rgba(30,91,159,.22)}
+.btn:hover{opacity:1;transform:translateY(-1px);box-shadow:var(--shadow-md);border-color:#B9C6D6}
+.btn.prim:hover{background:linear-gradient(135deg,#184D87 0%,#1F67AD 100%)}
+.btn.save{background:#EEF6FF;color:var(--blueD);border-color:#B9D5F2;box-shadow:0 3px 8px rgba(30,91,159,.08);font-weight:800}
+.btn.save:hover{background:#E1F0FF;border-color:#8BBCEB}
+.btn.reset{background:#fff;color:#7A4B12;border-color:#E8C48E;box-shadow:none;font-weight:800}
+.btn.reset:hover{background:#FFF8EC;border-color:#DCA95F;color:#633806}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(30,91,159,.18);outline-offset:2px}
+input,select{transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;color:#182230}
+input:focus,select:focus{border-color:#8CB7E6!important;box-shadow:0 0 0 3px rgba(30,91,159,.10);background:#fff!important}
+
+/* ── 통계 카드 ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat{background:linear-gradient(180deg,#fff 0%,#FAFCFF 100%);border:1px solid var(--bd2);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:transform .14s ease,box-shadow .14s ease}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--blue),#7FB3EA);opacity:.85}
+.stat:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.stat-l{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:700}
+.stat-v{font-size:22px;font-weight:850;letter-spacing:-.035em;color:#101828}
+
+/* ── 배지 ── */
+.badge{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;border:1px solid transparent;line-height:1.25}
+.b-blue{background:var(--blueL);color:var(--blueD);border-color:#C9E0FA}
+.b-green{background:var(--greenL);color:var(--greenD);border-color:#CBE9D5}
+.b-amber{background:var(--amberL);color:var(--amberD);border-color:#F8DCA8}
+.b-red{background:var(--redL);color:#B42318;border-color:#F4C7C5}
+.b-purple{background:var(--purpleL);color:var(--purpleD);border-color:#DAD6FF}
+.b-gray{background:var(--grayL);color:#475467;border-color:#E4E7EC}
+
+/* ── 프로그레스 바 ── */
+.pb-w{width:72px;height:6px;background:#EAECF0;border-radius:999px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px;box-shadow:inset 0 1px 2px rgba(16,24,40,.06)}
+.pb-f{height:100%;border-radius:999px;box-shadow:0 0 0 1px rgba(255,255,255,.2) inset}
+
+/* ── 카드 ── */
+.card{background:rgba(255,255,255,.96);border:1px solid var(--bd2);border-radius:18px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow-sm);transition:box-shadow .14s ease,transform .14s ease}
+.card:hover{box-shadow:var(--shadow-md)}
+.card-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--bd2)}
+.card-hd-ico{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(30,91,159,.08)}
+.card-hd-t{font-size:14px;font-weight:800;color:#182230}
+.card-hd-s{font-size:11px;color:var(--subtle);margin-top:2px;font-weight:500}
+
+/* ── 테이블 ── */
+.tbl{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--bd2);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.tbl th{font-size:11px;font-weight:800;color:#667085;text-align:left;padding:10px 10px;border-bottom:1px solid var(--bd);background:linear-gradient(180deg,#F8FAFC 0%,#F2F5F9 100%);white-space:nowrap;letter-spacing:-.01em}
+.tbl th.r{text-align:right}.tbl th.c{text-align:center}
+.tbl td{font-size:12px;color:#1D2939;padding:10px 10px;border-bottom:1px solid #EEF2F6;vertical-align:middle;background:#fff;transition:background .12s ease}
+.tbl td.r{text-align:right}.tbl td.c{text-align:center}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#F7FAFF!important}
+.tbl .l1-row td{background:#F3F7FB!important;font-weight:800;font-size:12px;color:#1F2937}
+table strong{font-weight:800;color:#111827}
+
+/* 동적 비교표 공통 */
+#cmp-wrap,#s5>div[style*="overflow-x:auto"]{background:#fff;border:1px solid var(--bd2);border-radius:16px;box-shadow:var(--shadow-sm);padding:0;overflow:auto!important}
+#cmp-tbl,#sum-tbl{width:100%;background:#fff;border-radius:16px;overflow:hidden}
+#cmp-tbl th,#sum-tbl th{position:sticky;top:0;z-index:2;box-shadow:0 1px 0 rgba(16,24,40,.04)}
+#cmp-tbl tbody tr:hover td,#sum-tbl tbody tr:hover td{filter:brightness(.985)}
+
+/* ── 알람박스 ── */
+.alarm{background:linear-gradient(135deg,#FFF7E8 0%,#FFFBF3 100%);border:1px solid #F3C77B;border-left:5px solid var(--amber);border-radius:13px;padding:11px 14px;margin-bottom:14px;display:flex;gap:9px;font-size:12px;color:var(--amberD);align-items:flex-start;box-shadow:0 4px 12px rgba(183,121,31,.08)}
+.alarm strong{font-weight:850}
+
+/* ── InfoBar ── */
+.info-bar{display:flex;gap:10px;background:rgba(255,255,255,.82);border:1px solid var(--bd2);border-radius:14px;padding:10px 12px;margin-bottom:14px;font-size:12px;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
+.info-bar span{display:flex;flex-direction:column;min-width:86px;gap:1px}
+.info-bar .il{font-size:10px;color:var(--subtle);font-weight:750;text-transform:none}
+.info-bar .iv{font-weight:850;color:#182230}
+
+/* ── 분리발주 뱃지 ── */
+.split-badge{background:linear-gradient(135deg,var(--blueL) 0%,#F7FBFF 100%);border:1px solid #B9D7F6;border-left:5px solid var(--blue);border-radius:13px;padding:10px 13px;margin-bottom:14px;font-size:12px;color:var(--blueD);box-shadow:var(--shadow-sm)}
+
+/* ── Budget % 셀 ── */
+.bpct{text-align:right}.bpct .pv{font-size:10px;font-weight:800}.bpct .pd{font-size:9px;font-weight:700}
+
+/* ── 발주 방식 탭 ── */
+.mode-tabs{display:flex;gap:7px;margin-bottom:14px;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.72);border:1px solid var(--bd2);border-radius:14px;padding:8px 10px;box-shadow:var(--shadow-sm)}
+.mode-tab{font-size:12px;padding:7px 13px;border-radius:999px;cursor:pointer;border:1px solid var(--bd);background:#fff;color:#667085;font-weight:750;box-shadow:0 1px 2px rgba(16,24,40,.05);transition:all .15s ease}
+.mode-tab:hover{border-color:#B9C6D6;color:var(--blueD);background:#F8FBFF}
+.mode-tab.on{background:linear-gradient(135deg,var(--blue) 0%,#2D72B7 100%);color:#fff;border-color:transparent;font-weight:850;box-shadow:0 8px 15px rgba(30,91,159,.18)}
+
+/* ── 업체 패널 ── */
+.two-col{display:grid;grid-template-columns:220px 1fr;gap:14px}
+.sup-panel{border:1px solid var(--bd2);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
+.sup-ph{padding:12px 13px;background:linear-gradient(180deg,#F8FAFC 0%,#F2F5F9 100%);border-bottom:1px solid var(--bd2);font-size:12px;font-weight:850;color:#475467}
+.sup-item{padding:12px 13px;border-bottom:1px solid #EEF2F6;cursor:pointer;background:#fff;transition:background .15s ease,box-shadow .15s ease,border-color .15s ease}
+.sup-item:last-child{border-bottom:none}
+.sup-item:hover{background:#F8FBFF}
+.sup-item.on{background:linear-gradient(90deg,var(--blueL) 0%,#fff 100%);border-left:4px solid var(--blue);box-shadow:inset 0 0 0 1px rgba(30,91,159,.08)}
+.sup-name{font-size:13px;font-weight:850;color:#1D2939}
+.sup-sub{font-size:11px;color:var(--subtle);margin-top:2px;font-weight:500}
+.sup-bot{display:flex;justify-content:space-between;align-items:center;margin-top:7px}
+.match-panel{border:1px solid var(--bd2);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
+.match-hd{padding:12px 14px;background:linear-gradient(180deg,#F8FAFC 0%,#F3F7FB 100%);border-bottom:1px solid var(--bd2);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.match-meta{padding:9px 14px;background:#fff;border-bottom:1px solid var(--bd2);display:flex;gap:14px;font-size:12px;color:#667085;flex-wrap:wrap}
+.match-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:11px 14px;background:#F8FAFC;border-top:1px solid var(--bd2)}
+.ms-l{font-size:10px;color:var(--subtle);font-weight:750}.ms-v{font-size:14px;font-weight:850;color:#1D2939}
+
+/* ── Scope 카드 ── */
+.scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.scope-item{border:1px solid var(--bd2);border-radius:14px;padding:12px 13px;background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.04);transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease}
+.scope-item:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.scope-item.split{border-color:#B9D7F6;background:linear-gradient(135deg,var(--blueL) 0%,#fff 100%);box-shadow:0 6px 16px rgba(30,91,159,.08)}
+.scope-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px}
+.scope-name{font-size:12px;font-weight:850;color:#1D2939}.scope-opts{display:flex;gap:5px;flex-shrink:0}
+.scope-opt{font-size:10.5px;padding:3px 8px;border-radius:999px;cursor:pointer;border:1px solid var(--bd);background:#fff;color:#667085;font-weight:750}
+.scope-opt.on{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:850}
+.scope-sub{font-size:11px;color:var(--subtle);font-weight:500}
+
+/* ── 스텝바 ── */
+.step-bar{display:flex;align-items:center;margin-bottom:20px;background:#fff;border:1px solid var(--bd2);border-radius:16px;padding:13px 16px;box-shadow:var(--shadow-sm)}
+.step-c{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:850;flex-shrink:0}
+.step-c.on{background:linear-gradient(135deg,var(--blue),#2D72B7);color:#fff;box-shadow:0 6px 14px rgba(30,91,159,.22)}
+.step-c.off{background:#F2F4F7;color:#98A2B3;border:1px solid #E4E7EC}
+.step-l{font-size:12px;margin-left:7px;white-space:nowrap;font-weight:750;color:#475467}
+.step-line{flex:1;height:1px;background:linear-gradient(90deg,var(--bd),#EEF2F6);margin:0 10px}
+
+/* ── Summary 시나리오 탭 ── */
+.sc-tabs{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;background:rgba(255,255,255,.72);border:1px solid var(--bd2);border-radius:14px;padding:8px 10px;box-shadow:var(--shadow-sm)}
+
+/* ── Hero (추천) ── */
+.hero-card{border:1px solid #B9D7F6;border-left:6px solid var(--blue);border-radius:18px;padding:18px 20px;margin-bottom:14px;display:flex;gap:16px;background:linear-gradient(135deg,#F7FBFF 0%,#FFFFFF 56%,#F0F7FF 100%);box-shadow:var(--shadow-md)}
+.hero-ico{width:54px;height:54px;background:linear-gradient(135deg,#EAF6EF,#D7F0DF);border:1px solid #CBE9D5;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;flex-shrink:0;box-shadow:var(--shadow-sm)}
+
+/* ── 점수 카드 ── */
+.score-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.sc-card{border:1px solid var(--bd2);border-radius:16px;padding:13px;background:#fff;box-shadow:var(--shadow-sm);transition:transform .14s ease,box-shadow .14s ease}
+.sc-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.sc-card.top{border:2px solid var(--blue);box-shadow:0 10px 22px rgba(30,91,159,.13)}
+.sc-top{display:flex;justify-content:space-between;gap:6px;margin-bottom:8px}.sc-name{font-size:13px;font-weight:850;color:#1D2939}.sc-sub{font-size:10px;color:var(--subtle);font-weight:600}
+.sc-price{font-size:15px;font-weight:850;margin-bottom:2px;letter-spacing:-.02em}.sc-inco{font-size:10px;color:var(--subtle);margin-bottom:9px;font-weight:600}
+.sc-br{display:flex;align-items:center;gap:5px;margin-bottom:5px}.sc-bl{font-size:9px;color:#667085;width:40px;font-weight:750}.sc-bw{flex:1;height:5px;background:#EAECF0;border-radius:999px;overflow:hidden}.sc-bf{height:100%;border-radius:999px}
+.sc-tot{margin-top:9px;padding-top:8px;border-top:1px solid var(--bd2);display:flex;justify-content:space-between;align-items:center}.sc-tl{font-size:10px;color:var(--subtle);font-weight:750}.sc-tv{font-size:18px;font-weight:900;letter-spacing:-.03em}
+
+
+/* ── 추천 발주방식 카드 ── */
+.recommend-card{background:linear-gradient(135deg,#F7FBFF 0%,#FFFFFF 60%,#F5FFF8 100%);border:1px solid #B9D5F2;border-radius:16px;padding:16px 18px;margin:0 0 14px;box-shadow:0 12px 28px rgba(30,91,159,.10);display:grid;grid-template-columns:1.15fr 1.35fr;gap:16px;align-items:stretch}
+.rec-kicker{font-size:11px;font-weight:850;color:var(--blueD);letter-spacing:.02em;margin-bottom:5px}
+.rec-title{font-size:18px;font-weight:900;color:#111827;line-height:1.35;margin-bottom:8px}
+.rec-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.rec-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:850;border-radius:999px;padding:4px 9px;background:#fff;border:1px solid var(--bd2);color:#344054}
+.rec-pill.good{background:var(--greenL);border-color:#B8D7A7;color:var(--greenD)}
+.rec-amount{font-size:13px;color:#475467;line-height:1.7}
+.rec-reason-box{background:#fff;border:1px solid var(--bd2);border-radius:13px;padding:12px 14px}
+.rec-reason-title{font-size:12px;font-weight:900;color:#1D2939;margin-bottom:8px}
+.rec-reasons{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.rec-reasons li{font-size:11px;color:#475467;line-height:1.6;display:flex;gap:6px;align-items:flex-start}
+.rec-reasons li::before{content:'•';color:var(--blue);font-weight:900;margin-top:0}
+.rec-note{margin-top:9px;padding-top:9px;border-top:1px dashed var(--bd2);font-size:10.5px;color:#667085;line-height:1.6}
+@media(max-width:900px){.recommend-card{grid-template-columns:1fr}}
+
+/* ── Query 카드 ── */
+.q-card{border:1px solid var(--bd2);border-radius:16px;overflow:hidden;margin-bottom:12px;background:#fff;box-shadow:var(--shadow-sm);transition:box-shadow .14s ease,transform .14s ease}
+.q-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.q-card-h{display:flex;align-items:center;gap:8px;padding:12px 14px;background:linear-gradient(180deg,#F8FAFC 0%,#F3F7FB 100%);border-bottom:1px solid var(--bd2)}
+.q-card-b{padding:14px}.q-meta{display:flex;gap:14px;margin-bottom:10px;font-size:11px;color:#667085;flex-wrap:wrap}
+.q-draft{background:#F8FAFC;border:1px solid #EEF2F6;border-radius:12px;padding:11px 12px;margin-bottom:10px;font-size:12px;line-height:1.75;white-space:pre-line;color:#344054;font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace}
+.q-reply{background:var(--greenL);border-left:4px solid var(--green);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#1D2939;line-height:1.65}
+.q-acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+
+/* ── 업로드존 ── */
+.upload-z{border:1.5px dashed #B9C6D6;border-radius:16px;padding:24px 18px;text-align:center;background:linear-gradient(135deg,#fff 0%,#F8FAFC 100%);margin-bottom:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.upload-z .icon{font-size:28px;margin-bottom:6px}.upload-z p{font-size:13px;color:#344054;font-weight:750}.upload-z span{font-size:11px;color:#98A2B3;font-weight:600}
+.upload-z button{margin-top:11px;background:var(--blueL);color:var(--blueD);border:1px solid #C9E0FA;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:850;cursor:pointer;transition:all .15s ease}.upload-z button:hover{background:#DCEEFF;transform:translateY(-1px)}
+
+/* ── 견적비교표 전용 헤더 ── */
+.cmp-sup-hd{font-size:10px;font-weight:800;text-align:center;padding:7px 5px;border-bottom:1px solid var(--bd);white-space:pre-line;line-height:1.35}
+.cmp-sub-hd{font-size:9.5px;font-weight:800;color:#667085;text-align:right;padding:6px;border-bottom:1px solid var(--bd);background:var(--surf);white-space:nowrap}
+.cmp-sub-hd.bgt{background:#EAF6EF;color:var(--greenD)}
+.cmp-td-u{padding:8px 6px;font-size:10.5px;text-align:center;border-bottom:1px solid var(--bd2)}
+.cmp-td-a{padding:8px 8px;font-size:10.5px;text-align:right;font-weight:800;border-bottom:1px solid var(--bd2)}
+.cmp-td-p{padding:8px 8px;font-size:10.5px;text-align:right;border-bottom:1px solid var(--bd2);background:#F5FBF7}
+
+/* ── 작은 폼/인라인 요소 정돈 ── */
+label{font-weight:800;color:#667085!important}
+select,input{font-family:inherit;border-radius:10px!important}
+#s0>div[style*="display:flex;gap:6px"]{background:#fff;border:1px solid var(--bd2);border-radius:14px;padding:9px;box-shadow:var(--shadow-sm);gap:8px!important}
+#s0 select{min-height:34px;background:#fff!important;color:#475467!important;font-weight:700}
+#s0 input{font-weight:600;color:#1D2939}
+
+/* 반응형 */
+@media(max-width:1100px){.score-grid{grid-template-columns:repeat(3,1fr)}.stat-grid{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:190px 1fr}}
+@media(max-width:760px){.topbar-note{display:none}.tabs{top:58px;padding:0 8px}.screen{padding:16px}.row-hd{align-items:flex-start;flex-direction:column}.btns{width:100%;justify-content:flex-start}.score-grid{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.scope-grid{grid-template-columns:1fr}.step-bar{overflow-x:auto}.stat-grid{grid-template-columns:1fr}.info-bar span{min-width:120px}.tbl{font-size:12px}}
+@media(max-width:520px){.score-grid{grid-template-columns:1fr}.tab{padding:11px 12px}.pg-t{font-size:18px}.hero-card{flex-direction:column}.match-sum{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">🏗</div>
+  <span class="topbar-t">SteelBid Comparator</span>
+  <span class="ver-chip">PRD v2.0</span>
+  <span class="topbar-note">⑤⑥ 화면: 발주방식별 단위·수량·단가·금액·Budget% + 형강/도장 사급 시나리오</span>
+</div>
+
+<div class="tabs" id="tabBar">
+  <button class="tab on" onclick="go(0,this)">① 프로젝트 목록</button>
+  <button class="tab" onclick="go(1,this)">② 프로젝트 생성</button>
+  <button class="tab" onclick="go(2,this)">③ BOQ 관리</button>
+  <button class="tab" onclick="go(3,this)">④ 견적 업로드·매칭</button>
+  <button class="tab" onclick="go(4,this)">⑤ 견적 비교표</button>
+  <button class="tab" onclick="go(5,this)">⑥ 비교 Summary</button>
+  <button class="tab" onclick="go(6,this)">⑦ Query 관리</button>
+  <button class="tab" onclick="go(7,this)">⑧ 추천 대시보드</button>
+</div>
+
+<!-- ① 프로젝트 목록 -->
+<div class="screen on" id="s0">
+  <div class="row-hd">
+    <div class="pg-t">프로젝트 목록</div>
+    <div class="btns"><button class="btn">내보내기</button><button class="btn prim" onclick="go(1,document.querySelectorAll('.tab')[1])">+ 새 프로젝트</button></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-l">전체 프로젝트</div><div class="stat-v">12</div></div>
+    <div class="stat"><div class="stat-l">진행 중</div><div class="stat-v" style="color:var(--blue)">5</div></div>
+    <div class="stat"><div class="stat-l">Query 대기</div><div class="stat-v" style="color:var(--amber)">3</div></div>
+    <div class="stat"><div class="stat-l">완료</div><div class="stat-v" style="color:var(--green)">4</div></div>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:10px">
+    <div style="flex:1;display:flex;align-items:center;gap:6px;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:5px 10px">
+      <span style="color:#aaa">🔍</span><input style="border:none;background:transparent;font-size:12px;outline:none;flex:1" placeholder="프로젝트명·자재·국가 검색"/>
+    </div>
+    <select style="background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:5px 8px;font-size:11px;color:#666"><option>전체 자재</option><option>강구조 외주</option><option>Carbon Plate</option></select>
+    <select style="background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:5px 8px;font-size:11px;color:#666"><option>전체 상태</option><option>진행 중</option><option>완료</option></select>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>프로젝트명</th><th>자재</th><th>발주 범위</th><th>통화</th><th>업체</th><th>충실도</th><th>상태</th><th>수정일</th></tr></thead>
+    <tbody>
+      <tr style="cursor:pointer" onclick="go(4,document.querySelectorAll('.tab')[4])">
+        <td><div style="font-weight:500;font-size:12px">LNG Plant PJT — Qatar</div><div style="font-size:10px;color:#aaa">카타르 LNG 터미널</div></td>
+        <td><span class="badge b-purple">강구조 외주</span></td>
+        <td><span class="badge b-amber">분리발주 2건</span></td>
+        <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">USD</span></td>
+        <td style="font-size:11px">5개사</td>
+        <td><div class="pb-w"><div class="pb-f" style="width:88%;background:var(--blue)"></div></div><span style="font-size:10px">88%</span></td>
+        <td><span class="badge b-amber">진행 중</span></td>
+        <td style="font-size:10px;color:#aaa">2026.06.25</td>
+      </tr>
+      <tr style="cursor:pointer">
+        <td><div style="font-weight:500;font-size:12px">Offshore Platform — Malaysia</div><div style="font-size:10px;color:#aaa">말레이시아 해양플랫폼</div></td>
+        <td><span class="badge b-purple">강구조 외주</span></td>
+        <td><span class="badge b-gray">일괄 발주</span></td>
+        <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">USD</span></td>
+        <td style="font-size:11px">6개사</td>
+        <td><div class="pb-w"><div class="pb-f" style="width:95%;background:var(--blue)"></div></div><span style="font-size:10px">95%</span></td>
+        <td><span class="badge b-green">완료</span></td>
+        <td style="font-size:10px;color:#aaa">2026.05.10</td>
+      </tr>
+      <tr style="cursor:pointer">
+        <td><div style="font-weight:500;font-size:12px">Refinery PJT — Saudi Arabia</div><div style="font-size:10px;color:#aaa">사우디 정유 플랜트</div></td>
+        <td><span class="badge b-blue">Carbon Plate</span></td>
+        <td><span class="badge b-gray">일괄 발주</span></td>
+        <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">USD</span></td>
+        <td style="font-size:11px">3개사</td>
+        <td><div class="pb-w"><div class="pb-f" style="width:60%;background:var(--amber)"></div></div><span style="font-size:10px">60%</span></td>
+        <td><span class="badge b-red">Query 대기</span></td>
+        <td style="font-size:10px;color:#aaa">2026.06.20</td>
+      </tr>
+      <tr style="cursor:pointer">
+        <td><div style="font-weight:500;font-size:12px">FPSO PJT — Singapore</div><div style="font-size:10px;color:#aaa">싱가포르 FPSO</div></td>
+        <td><span class="badge b-green">Stainless Steel</span></td>
+        <td><span class="badge b-amber">분리발주 1건</span></td>
+        <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">SGD</span></td>
+        <td style="font-size:11px">4개사</td>
+        <td><div class="pb-w"><div class="pb-f" style="width:100%;background:var(--green)"></div></div><span style="font-size:10px">100%</span></td>
+        <td><span class="badge b-green">완료</span></td>
+        <td style="font-size:10px;color:#aaa">2026.04.15</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ② 프로젝트 생성 -->
+<div class="screen" id="s1">
+  <div class="bc">프로젝트 목록 &gt; 새 프로젝트 생성</div>
+  <div class="pg-t" style="margin-bottom:14px">새 프로젝트 생성</div>
+  <div class="step-bar">
+    <div class="step-c on">1</div><span class="step-l" style="font-weight:500">기본정보·환율</span>
+    <div class="step-line"></div>
+    <div class="step-c off">2</div><span class="step-l" style="color:#aaa">발주범위 설정</span>
+    <div class="step-line"></div>
+    <div class="step-c off">3</div><span class="step-l" style="color:#aaa">BOQ 등록</span>
+    <div class="step-line"></div>
+    <div class="step-c off">4</div><span class="step-l" style="color:#aaa">업체 등록</span>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-hd-ico" style="background:var(--blueL)">📋</div><div><div class="card-hd-t">프로젝트 기본 정보</div></div></div>
+    <div style="margin-bottom:9px"><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">프로젝트명 *</label><input value="LNG Plant PJT — Qatar" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px">
+      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">발주처 / 국가 *</label><input value="Qatar Petroleum / Qatar" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
+      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">견적 마감일</label><input value="2026.07.15" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
+    </div>
+    <label style="font-size:10px;color:#888;display:block;margin-bottom:5px">자재 구분 *</label>
+    <div style="display:flex;gap:5px">
+      <div style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">Carbon Plate</div>
+      <div style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">Stainless Steel</div>
+      <div style="flex:1;border:0.5px solid var(--blue);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--blueL);color:var(--blueD);font-weight:500">강구조 외주</div>
+      <div style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">복합</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-hd-ico" style="background:var(--blueL)">💱</div><div><div class="card-hd-t">기준 통화 및 프로젝트 환율</div></div></div>
+    <div style="background:var(--blueL);border-radius:7px;padding:8px 11px;margin-bottom:11px;font-size:11px;color:var(--blueD)">ℹ 프로젝트 환율은 재무팀 확인 후 입력하고 환율 기준일을 반드시 기재해 주세요.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px">
+      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">기준 통화 *</label><select style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"><option>USD (미국 달러)</option><option>SGD</option><option>KRW</option></select></div>
+      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">환율 기준일 *</label><input value="2026.06.27" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>견적 통화</th><th>국가</th><th class="r">1단위 → USD</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SGD</strong><div style="font-size:9px;color:#aaa">싱가포르</div></td><td style="font-size:11px;color:#888">Singapore Supplier</td><td class="r"><input value="0.7421" style="width:90px;text-align:right;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:3px 6px;font-size:11px"/> USD/SGD</td></tr>
+        <tr><td><strong>CNY</strong><div style="font-size:9px;color:#aaa">중국</div></td><td style="font-size:11px;color:#888">China Supplier</td><td class="r"><input value="0.1378" style="width:90px;text-align:right;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:3px 6px;font-size:11px"/> USD/CNY</td></tr>
+        <tr><td><strong>KRW</strong><div style="font-size:9px;color:#aaa">한국</div></td><td style="font-size:11px;color:#888">Korea Supplier</td><td class="r"><input value="0.000720" style="width:90px;text-align:right;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:3px 6px;font-size:11px"/> USD/KRW</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-hd-ico" style="background:var(--blueL)">🔀</div><div><div class="card-hd-t">발주 범위 (Scope) 설정</div><div class="card-hd-s">공종별 일괄/분리 선택 — 분리 시 전용 견적 탭 자동 생성</div></div></div>
+    <div class="scope-grid">
+      <div class="scope-item"><div class="scope-top"><span class="scope-name">Ancillary steel works</span><div class="scope-opts"><span class="scope-opt on">일괄</span><span class="scope-opt">분리</span></div></div><div class="scope-sub">사다리·핸드레일·그레이팅</div></div>
+      <div class="scope-item"><div class="scope-top"><span class="scope-name">Shop drawing</span><div class="scope-opts"><span class="scope-opt on">일괄</span><span class="scope-opt">분리</span></div></div><div class="scope-sub">구조도면 작성</div></div>
+      <div class="scope-item split"><div class="scope-top"><span class="scope-name" style="color:var(--blueD)">Material Procurement</span><div class="scope-opts"><span class="scope-opt">일괄</span><span class="scope-opt on">분리</span></div></div><div class="scope-sub" style="color:var(--blue)">✅ 별도 강판 Supplier 지정</div></div>
+      <div class="scope-item"><div class="scope-top"><span class="scope-name">Fabrication</span><div class="scope-opts"><span class="scope-opt on">일괄</span><span class="scope-opt">분리</span></div></div><div class="scope-sub">제작</div></div>
+      <div class="scope-item"><div class="scope-top"><span class="scope-name">Transportation</span><div class="scope-opts"><span class="scope-opt on">일괄</span><span class="scope-opt">분리</span></div></div><div class="scope-sub">운반</div></div>
+      <div class="scope-item split"><div class="scope-top"><span class="scope-name" style="color:var(--blueD)">Steel Painting</span><div class="scope-opts"><span class="scope-opt">일괄</span><span class="scope-opt on">분리</span></div></div><div class="scope-sub" style="color:var(--blue)">✅ 별도 Painting 업체 지정</div></div>
+      <div class="scope-item"><div class="scope-top"><span class="scope-name">Miscellaneous Material</span><div class="scope-opts"><span class="scope-opt on">일괄</span><span class="scope-opt">분리</span></div></div><div class="scope-sub">고력볼트·앵커볼트</div></div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:6px"><button class="btn">취소</button><button class="btn prim" onclick="go(2,document.querySelectorAll('.tab')[2])">다음: BOQ 등록 →</button></div>
+</div>
+
+<!-- ③ BOQ 관리 -->
+<div class="screen" id="s2">
+  <div class="row-hd">
+    <div><div class="bc">LNG Plant PJT — Qatar &gt; BOQ 관리</div><div class="pg-t">③ BOQ 관리 <span style="font-size:11px;font-weight:400;color:#aaa">강구조 외주</span></div></div>
+    <div class="btns"><button class="btn">양식 다운로드</button><button class="btn">📤 엑셀 업로드</button><button class="btn save" onclick="saveMockup()">💾 저장</button></div>
+  </div>
+  <div class="info-bar">
+    <span><span class="il">프로젝트</span><span class="iv">LNG Plant PJT — Qatar</span></span>
+    <span><span class="il">기준 통화</span><span class="iv">USD</span></span>
+    <span><span class="il">분리발주</span><span class="iv" style="color:var(--blue)">2건 (Material, Painting)</span></span>
+    <span><span class="il">전체 Budget</span><span class="iv">$1,191,200</span></span>
+  </div>
+  <div class="upload-z">
+    <div class="icon">📊</div>
+    <p>엑셀 파일을 업로드하면 BOQ 항목이 자동으로 채워집니다</p>
+    <span>지원: .xlsx .xls .csv — 최대 10MB</span>
+    <button>파일 선택</button>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+    <span style="font-size:11px;color:#888">총 <strong>17</strong>개 항목</span>
+    <button class="btn" style="font-size:10px;padding:3px 8px">+ 행 추가</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th></th><th>구분 (L1)</th><th>내역 (L2)</th><th>세부내역 (L3)</th><th class="c">단위</th><th class="r">수량</th><th class="r" style="background:#EAF3DE;color:#27500A">Budget (USD)</th><th></th></tr></thead>
+    <tbody>
+      <tr class="l1-row"><td><input type="checkbox"/></td><td colspan="6" style="padding:7px 8px">Ancillary steel works</td><td></td></tr>
+      <tr><td><input type="checkbox"/></td><td></td><td style="font-size:10px;color:#aaa">Ancillary</td><td>Steel Ladder fabrication</td><td class="c">m</td><td class="r">450</td><td class="r" style="background:#f0fae8;color:#27500A;font-weight:500">12,600</td><td style="color:#ccc;cursor:pointer">🗑</td></tr>
+      <tr><td><input type="checkbox"/></td><td></td><td style="font-size:10px;color:#aaa">Ancillary</td><td>Handrail fabrication</td><td class="c">m</td><td class="r">280</td><td class="r" style="background:#f0fae8;color:#27500A;font-weight:500">8,400</td><td style="color:#ccc;cursor:pointer">🗑</td></tr>
+      <tr class="l1-row"><td><input type="checkbox"/></td><td colspan="6" style="padding:7px 8px">Structure steel works</td><td></td></tr>
+      <tr><td><input type="checkbox"/></td><td></td><td style="font-size:11px;font-weight:500">Shop Drawing</td><td>Shop drawing (일식)</td><td class="c">ton</td><td class="r">850</td><td class="r" style="background:#f0fae8;color:#27500A;font-weight:500">42,500</td><td style="color:#ccc;cursor:pointer">🗑</td></tr>
+      <tr style="background:#EAF3DE"><td><input type="checkbox"/></td><td colspan="6" style="padding:7px 8px;font-size:11px;font-weight:500;color:var(--blueD)">🔀 Material Procurement — 분리발주 (별도 강판 Supplier)</td><td></td></tr>
+      <tr style="background:#f0fcf4"><td><input type="checkbox"/></td><td></td><td></td><td style="color:var(--green)">Steel for building/structure</td><td class="c">ton</td><td class="r">620</td><td class="r" style="background:#f0fae8;color:#27500A;font-weight:500">496,000</td><td style="color:#ccc;cursor:pointer">🗑</td></tr>
+      <tr><td><input type="checkbox"/></td><td></td><td style="font-size:11px;font-weight:500">Fabrication</td><td>Steel for building</td><td class="c">ton</td><td class="r">620</td><td class="r" style="background:#f0fae8;color:#27500A;font-weight:500">186,000</td><td style="color:#ccc;cursor:pointer">🗑</td></tr>
+      <tr style="background:#EAF3DE"><td><input type="checkbox"/></td><td colspan="6" style="padding:7px 8px;font-size:11px;font-weight:500;color:var(--blueD)">🎨 Steel Painting — 분리발주 (별도 Painting 업체)</td><td></td></tr>
+      <tr style="background:#f0fcf4"><td><input type="checkbox"/></td><td></td><td></td><td style="color:var(--green)">Blast clearing</td><td class="c">m²</td><td class="r">4,200</td><td class="r" style="background:#f0fae8;color:#27500A;font-weight:500">21,000</td><td style="color:#ccc;cursor:pointer">🗑</td></tr>
+      <tr><td><input type="checkbox"/></td><td></td><td style="font-size:11px;font-weight:500">Misc Material</td><td>High strength bolt</td><td class="c">nos</td><td class="r">2,400</td><td class="r" style="background:#f0fae8;color:#27500A;font-weight:500">14,400</td><td style="color:#ccc;cursor:pointer">🗑</td></tr>
+    </tbody>
+  </table>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px">
+    <div class="stat"><div class="stat-l">총 세부 항목</div><div class="stat-v" style="font-size:15px">17개</div></div>
+    <div class="stat"><div class="stat-l">총 Budget (USD)</div><div class="stat-v" style="font-size:15px">$1,191,200</div></div>
+    <div class="stat" style="border:0.5px solid #B5D4F4"><div class="stat-l" style="color:var(--blue)">분리 발주 공종</div><div class="stat-v" style="font-size:15px;color:var(--blue)">2건</div></div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:12px"><button class="btn">이전</button><button class="btn prim" onclick="go(3,document.querySelectorAll('.tab')[3])">저장 후 다음 →</button></div>
+</div>
+
+<!-- ④ 견적 업로드·매칭 -->
+<div class="screen" id="s3">
+  <div class="row-hd">
+    <div><div class="bc">LNG Plant PJT — Qatar &gt; 견적 업로드·매칭</div><div class="pg-t">④ 견적 업로드 · BOQ 매칭</div></div>
+    <div class="btns"><button class="btn">+ 업체 추가</button><button class="btn reset" onclick="confirmUploadReset()">↺ 업로드 초기화</button><button class="btn save" onclick="saveMockup()">💾 저장</button><button class="btn prim" onclick="go(4,document.querySelectorAll('.tab')[4])">비교표 생성 →</button></div>
+  </div>
+  <div class="split-badge">🔀 분리 발주: <strong>Material Procurement</strong> → POSCO / <strong>Steel Painting</strong> → KCC Steel</div>
+  <div class="two-col">
+    <div class="sup-panel">
+      <div class="sup-ph">참여 업체 (5개사)</div>
+      <div class="sup-item on"><div class="sup-name">Hyundai Steel</div><div class="sup-sub">한국 · KRW→USD</div><div class="sup-bot"><span class="badge b-amber">일부 누락</span><span style="font-size:10px;color:#aaa">16/19</span></div></div>
+      <div class="sup-item"><div class="sup-name">POSCO (Material)</div><div class="sup-sub">분리발주 · KRW→USD</div><div class="sup-bot"><span class="badge b-green">매칭 완료</span><span style="font-size:10px;color:#aaa">2/2</span></div></div>
+      <div class="sup-item"><div class="sup-name">KCC Steel (Painting)</div><div class="sup-sub">분리발주 · KRW→USD</div><div class="sup-bot"><span class="badge b-green">매칭 완료</span><span style="font-size:10px;color:#aaa">3/3</span></div></div>
+      <div class="sup-item"><div class="sup-name">Baosteel</div><div class="sup-sub">중국 · CNY→USD</div><div class="sup-bot"><span class="badge b-green">매칭 완료</span><span style="font-size:10px;color:#aaa">19/19</span></div></div>
+      <div class="sup-item"><div class="sup-name">JFE Steel</div><div class="sup-sub">일본 · JPY→USD</div><div class="sup-bot"><span class="badge b-amber">일부 누락</span><span style="font-size:10px;color:#aaa">15/19</span></div></div>
+    </div>
+    <div class="match-panel">
+      <div class="match-hd">
+        <div style="display:flex;align-items:center;gap:7px"><span style="font-size:12px;font-weight:500">Hyundai Steel</span><span class="badge b-blue">KRW→USD @0.000720</span><span class="badge b-purple">FOB Incheon</span></div>
+        <div style="display:flex;gap:6px;align-items:center"><button class="btn reset" style="font-size:10px;padding:3px 8px;min-height:26px" onclick="confirmUploadReset()">업로드 초기화</button><button class="btn" style="font-size:10px;padding:3px 8px;min-height:26px">재업로드</button></div>
+      </div>
+      <div class="match-meta"><span>📄 HyundaiSteel_견적_v1.xlsx</span><span style="margin-left:auto">물류비: <strong>미포함</strong></span><span>납기: <strong>12주</strong></span></div>
+      <table class="tbl">
+        <thead><tr><th>BOQ 세부내역</th><th>업체 매칭</th><th class="c">단위</th><th class="r">수량</th><th class="r">단가(KRW)</th><th class="c">상태</th></tr></thead>
+        <tbody>
+          <tr><td>Steel Ladder fab.</td><td>Ladder 450m (일치)</td><td class="c">m</td><td class="r">450</td><td class="r">38,000</td><td class="c" style="color:var(--green)">✅</td></tr>
+          <tr><td>Shop drawing</td><td>SD 일식 (일치)</td><td class="c">ton</td><td class="r">850</td><td class="r">52,000</td><td class="c" style="color:var(--green)">✅</td></tr>
+          <tr><td>Fab. building</td><td>제작_건축 (일치)</td><td class="c">ton</td><td class="r">620</td><td class="r">290,000</td><td class="c" style="color:var(--green)">✅</td></tr>
+          <tr style="background:#fffbf2"><td>Transport pipe rack</td><td>운반_파이프랙(단위상이)</td><td class="c" style="color:var(--amber)">m³</td><td class="r">230</td><td class="r">45,000</td><td class="c" style="color:var(--amber)">⚠ 단위</td></tr>
+          <tr style="background:#fff5f5"><td style="color:var(--red)">Anchor bolt</td><td style="color:#aaa">— 견적 미제출 —</td><td class="c" style="color:var(--red)">nos</td><td class="r" style="color:var(--red)">2,400</td><td class="r" style="color:#aaa">—</td><td class="c" style="color:var(--red)">❌ 누락</td></tr>
+        </tbody>
+      </table>
+      <div class="match-sum">
+        <div><div class="ms-l">매칭 완료</div><div class="ms-v" style="color:var(--green)">16항목</div></div>
+        <div><div class="ms-l">단위 불일치</div><div class="ms-v" style="color:var(--amber)">⚠ 2항목</div></div>
+        <div><div class="ms-l">누락</div><div class="ms-v" style="color:var(--red)">1항목</div></div>
+        <div><div class="ms-l">충실도</div><div class="ms-v">84.2%</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑤ 견적 비교표 -->
+<div class="screen" id="s4">
+  <div class="row-hd">
+    <div><div class="bc">LNG Plant PJT — Qatar &gt; 견적 비교표</div><div class="pg-t">⑤ 견적 비교표 — 세부 내역</div></div>
+    <div class="btns"><button class="btn">📊 엑셀</button><button class="btn">📄 PDF</button><button class="btn save" onclick="saveMockup()">💾 저장</button><button class="btn prim" onclick="go(5,document.querySelectorAll('.tab')[5])">Summary 보기 →</button></div>
+  </div>
+  <div class="info-bar">
+    <span><span class="il">기준통화</span><span class="iv">USD</span></span>
+    <span><span class="il">환율기준일</span><span class="iv">2026.06.27</span></span>
+    <span><span class="il">KRW</span><span class="iv">0.000720</span></span>
+    <span><span class="il">CNY</span><span class="iv">0.1378</span></span>
+    <span><span class="il">JPY</span><span class="iv">0.00650</span></span>
+    <span><span class="il">Budget</span><span class="iv" style="color:var(--blue)">표시 중 👁</span></span>
+  </div>
+  <div class="alarm"><span>⚠</span><span><strong>이상 단가:</strong> Baosteel — Fabrication(pipe rack) USD 245/ton — 2위(Hyundai USD 315) 대비 <strong>22.2% 저렴 → Query 발행 권장</strong></span></div>
+
+  <div class="mode-tabs">
+    <span style="font-size:11px;color:#888;margin-right:4px">발주 방식:</span>
+    <button class="mode-tab on" onclick="setMode5('outsource_bulk',this)">외주일괄</button>
+    <button class="mode-tab" onclick="setMode5('fab_delivery',this)">철골 제작/납품</button>
+    <button class="mode-tab" onclick="setMode5('outsource_shape',this)">외주일괄+형강사급</button>
+    <button class="mode-tab" onclick="setMode5('fab_shape',this)">철골 제작/납품+형강사급</button>
+    <button class="mode-tab" onclick="setMode5('outsource_shape_paint',this)">외주일괄+형강사급+도장사급</button>
+    <button class="mode-tab" onclick="setMode5('fab_shape_paint',this)">철골 제작/납품+형강사급+도장사급</button>
+  </div>
+  <div id="split-info5" style="display:none;background:var(--blueL);border:0.5px solid var(--blue);border-radius:7px;padding:7px 11px;margin-bottom:8px;font-size:11px;color:var(--blueD)"></div>
+
+  <div style="overflow-x:auto" id="cmp-wrap">
+    <table id="cmp-tbl" style="border-collapse:collapse;table-layout:fixed;min-width:700px">
+      <colgroup id="cmp-cols"></colgroup>
+      <thead id="cmp-thead"></thead>
+      <tbody id="cmp-tbody"></tbody>
+    </table>
+  </div>
+
+  <div id="cmp-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:11px"></div>
+</div>
+
+<!-- ⑥ 비교 Summary -->
+<div class="screen" id="s5">
+  <div class="row-hd">
+    <div><div class="bc">LNG Plant PJT — Qatar &gt; 견적 비교 Summary</div><div class="pg-t">⑥ 견적 비교 Summary — 공종별</div></div>
+    <div class="btns"><button class="btn">📊 엑셀</button><button class="btn">📄 PDF</button><button class="btn save" onclick="saveMockup()">💾 저장</button><button class="btn prim" onclick="go(6,document.querySelectorAll('.tab')[6])">Query 관리 →</button></div>
+  </div>
+  <div class="sc-tabs">
+    <span style="font-size:11px;color:#888;margin-right:4px">발주 시나리오:</span>
+    <button class="mode-tab on" onclick="setMode6('outsource_bulk',this)">외주일괄</button>
+    <button class="mode-tab" onclick="setMode6('fab_delivery',this)">철골 제작/납품</button>
+    <button class="mode-tab" onclick="setMode6('outsource_shape',this)">외주일괄+형강사급</button>
+    <button class="mode-tab" onclick="setMode6('fab_shape',this)">철골 제작/납품+형강사급</button>
+    <button class="mode-tab" onclick="setMode6('outsource_shape_paint',this)">외주일괄+형강사급+도장사급</button>
+    <button class="mode-tab" onclick="setMode6('fab_shape_paint',this)">철골 제작/납품+형강사급+도장사급</button>
+  </div>
+  <div id="recommend-mode6" class="recommend-card"></div>
+  <div id="split-info6" style="display:none;background:var(--blueL);border:0.5px solid var(--blue);border-radius:7px;padding:7px 11px;margin-bottom:8px;font-size:11px;color:var(--blueD)"></div>
+
+  <div style="overflow-x:auto">
+    <table id="sum-tbl" style="border-collapse:collapse;table-layout:fixed;min-width:600px">
+      <colgroup id="sum-cols"></colgroup>
+      <thead id="sum-thead"></thead>
+      <tbody id="sum-tbody"></tbody>
+    </table>
+  </div>
+  <div id="sum-scenario" style="display:none;margin-top:12px;background:var(--blueL);border:0.5px solid var(--blue);border-radius:10px;padding:11px 14px"></div>
+</div>
+
+<!-- ⑦ Query 관리 -->
+<div class="screen" id="s6">
+  <div class="row-hd">
+    <div><div class="bc">LNG Plant PJT — Qatar &gt; Query 관리</div><div class="pg-t">⑦ Query 관리</div></div>
+    <div class="btns"><button class="btn">📊 엑셀</button><button class="btn">📄 PDF</button><button class="btn save" onclick="saveMockup()">💾 저장</button></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-l">전체 Query</div><div class="stat-v">8건</div></div>
+    <div class="stat"><div class="stat-l">초안 대기</div><div class="stat-v" style="color:var(--amber)">4건</div></div>
+    <div class="stat"><div class="stat-l">발송 완료</div><div class="stat-v" style="color:var(--blue)">3건</div></div>
+    <div class="stat"><div class="stat-l">회신 완료</div><div class="stat-v" style="color:var(--green)">1건</div></div>
+  </div>
+  <div style="display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap">
+    <button class="mode-tab on">전체 (8)</button>
+    <button class="mode-tab">누락 (2)</button>
+    <button class="mode-tab">단위·Spec 불일치 (3)</button>
+    <button class="mode-tab">이상 단가 (2)</button>
+    <button class="mode-tab">Budget 초과 (1)</button>
+  </div>
+  <div class="q-card">
+    <div class="q-card-h"><span class="badge b-red">⚠ 이상 단가</span><span style="flex:1;font-size:12px;font-weight:500;margin-left:4px">Baosteel — Fabrication(pipe rack) 단가 확인</span><span class="badge b-amber">초안 대기</span></div>
+    <div class="q-card-b">
+      <div class="q-meta"><span>업체: <strong>Baosteel (China)</strong></span><span>항목: <strong>Fabrication Steel for pipe rack</strong></span><span>이슈: <strong>2위 대비 22.2% 저렴</strong></span></div>
+      <div class="q-draft">Dear Baosteel,
+
+We noted your unit price for Fabrication (Steel for pipe rack) is USD 245/ton, which is 22.2% lower than the next lowest offer (Hyundai: USD 315). Please confirm:
+1. Is the quoted price correct and final?
+2. Clarify if any scope items are excluded.
+
+Best regards, [담당자명] / Global Steel Structure Procurement</div>
+      <div class="q-acts"><button class="btn" style="font-size:10px;padding:3px 8px">✏ 수정</button><button class="btn" style="font-size:10px;padding:3px 8px">📋 복사</button><button class="btn prim" style="font-size:10px;padding:3px 8px">발송 완료로 변경</button></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-card-h"><span class="badge b-amber">누락 항목</span><span style="flex:1;font-size:12px;font-weight:500;margin-left:4px">JFE Steel — Misc Material 2항목 미제출</span><span class="badge b-blue">발송 완료</span></div>
+    <div class="q-card-b">
+      <div class="q-meta"><span>업체: <strong>JFE Steel (Japan)</strong></span><span>발송일: <strong>2026.06.25</strong></span></div>
+      <div class="q-draft">Dear JFE Steel,
+
+Your quotation did not include pricing for Anchor bolt and Common bolt. Please provide unit prices at your earliest convenience.</div>
+      <div class="q-acts"><button class="btn" style="font-size:10px;padding:3px 8px">📋 복사</button><button class="btn prim" style="font-size:10px;padding:3px 8px">회신 등록</button></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-card-h"><span class="badge b-purple">단위 불일치</span><span style="flex:1;font-size:12px;font-weight:500;margin-left:4px">Hyundai — Transportation pipe rack 단위(ton→m³)</span><span class="badge b-green">회신 완료</span></div>
+    <div class="q-card-b">
+      <div class="q-meta"><span>업체: <strong>Hyundai Steel</strong></span><span>회신일: <strong>2026.06.26</strong></span></div>
+      <div class="q-reply">당사 견적서 단위는 m³로 기재되었으나 실제 단가는 ton 기준입니다. KRW 63,000/ton으로 확인 부탁드립니다.</div>
+      <div class="q-acts"><button class="btn" style="font-size:10px;padding:3px 8px">비교표 반영</button></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-card-h"><span class="badge b-purple">Budget 초과</span><span style="flex:1;font-size:12px;font-weight:500;margin-left:4px">JFE Steel — 총금액 Budget 대비 초과</span><span class="badge b-blue">발송 완료</span></div>
+    <div class="q-card-b">
+      <div class="q-meta"><span>업체: <strong>JFE Steel</strong></span><span>이슈: <strong>총금액 Budget 대비 약 +8% 초과</strong></span></div>
+      <div class="q-draft">Dear JFE Steel, your total quotation exceeds our budget by approximately 8%. Please review and advise if cost reduction is possible.</div>
+      <div class="q-acts"><button class="btn" style="font-size:10px;padding:3px 8px">📋 복사</button><button class="btn prim" style="font-size:10px;padding:3px 8px">회신 등록</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑧ 추천 대시보드 -->
+<div class="screen" id="s7">
+  <div class="row-hd">
+    <div><div class="bc">LNG Plant PJT — Qatar &gt; 추천 대시보드</div><div class="pg-t">⑧ 최적 업체 추천 대시보드</div></div>
+    <div class="btns"><button class="btn">📊 엑셀</button><button class="btn">📄 결재용 PDF</button><button class="btn prim">📤 보고서 공유</button></div>
+  </div>
+  <div class="hero-card">
+    <div class="hero-ico">🏆</div>
+    <div style="flex:1">
+      <div style="font-size:10px;color:#aaa;margin-bottom:3px">분리 발주 포함 최적 추천 조합</div>
+      <div style="font-size:15px;font-weight:500;margin-bottom:6px">Baosteel(외주일괄) + POSCO(형강사급) + KCC Steel(도장사급)</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
+        <span class="badge b-green">통합 총금액 $1,105,550</span>
+        <span class="badge b-green">Budget 대비 ▼7.4% 절감</span>
+        <span class="badge b-amber">⚠ Fabrication Query 확인 후 확정</span>
+      </div>
+      <div style="font-size:11px;color:#666;line-height:1.7">외주일괄 공종은 Baosteel 1위, 형강은 POSCO 사급으로 Budget 절감, 도장은 KCC Steel 사급 기준입니다. <strong>Baosteel Fabrication 이상 단가 Query 회신 후 최종 발주 결정.</strong></div>
+    </div>
+  </div>
+  <div class="alarm"><span>⚠</span><span>본 추천은 가격·Budget 대비·충실도·이상 단가 기준 분석 의견입니다. PQ 승인, 납기 리스크, 과거 실적 등 비가격 요소는 담당 Buyer가 별도 검토 후 최종 결정하십시오.</span></div>
+  <div class="score-grid">
+    <div class="sc-card top"><div class="sc-top"><div><div class="sc-name">Baosteel</div><div class="sc-sub">China·CNY·일괄</div></div><span class="badge b-green">1위</span></div><div class="sc-price">$389,650</div><div class="sc-inco">FOB Shanghai · 충실도 100%</div>
+      <div class="sc-br"><span class="sc-bl">가격</span><div class="sc-bw"><div class="sc-bf" style="width:97%;background:var(--green)"></div></div><span style="font-size:8px;font-weight:500;color:var(--green)">97</span></div>
+      <div class="sc-br"><span class="sc-bl">충실도</span><div class="sc-bw"><div class="sc-bf" style="width:100%;background:var(--blue)"></div></div><span style="font-size:8px;font-weight:500">100</span></div>
+      <div class="sc-br"><span class="sc-bl">Budget</span><div class="sc-bw"><div class="sc-bf" style="width:90%;background:var(--blue)"></div></div><span style="font-size:8px;font-weight:500">90</span></div>
+      <div class="sc-br"><span class="sc-bl">이상알람</span><div class="sc-bw"><div class="sc-bf" style="width:40%;background:var(--red)"></div></div><span style="font-size:8px;font-weight:500;color:var(--red)">⚠1</span></div>
+      <div class="sc-tot"><span class="sc-tl">종합</span><span class="sc-tv" style="color:var(--green)">89</span></div>
+    </div>
+    <div class="sc-card" style="border:2px solid var(--blue)"><div class="sc-top"><div><div class="sc-name">POSCO</div><div class="sc-sub">Korea·KRW·형강사급</div></div><span class="badge b-blue">사급추천</span></div><div class="sc-price">$641,800</div><div class="sc-inco">FOB Busan · 충실도 100%</div>
+      <div class="sc-br"><span class="sc-bl">가격</span><div class="sc-bw"><div class="sc-bf" style="width:88%;background:var(--blue)"></div></div><span style="font-size:8px;font-weight:500">88</span></div>
+      <div class="sc-br"><span class="sc-bl">충실도</span><div class="sc-bw"><div class="sc-bf" style="width:100%;background:var(--blue)"></div></div><span style="font-size:8px;font-weight:500">100</span></div>
+      <div class="sc-br"><span class="sc-bl">Budget</span><div class="sc-bw"><div class="sc-bf" style="width:94%;background:var(--green)"></div></div><span style="font-size:8px;font-weight:500;color:var(--green)">94</span></div>
+      <div class="sc-br"><span class="sc-bl">이상알람</span><div class="sc-bw"><div class="sc-bf" style="width:100%;background:var(--green)"></div></div><span style="font-size:8px;font-weight:500;color:var(--green)">없음</span></div>
+      <div class="sc-tot"><span class="sc-tl">종합</span><span class="sc-tv" style="color:var(--blue)">94</span></div>
+    </div>
+    <div class="sc-card" style="border:2px solid var(--blue)"><div class="sc-top"><div><div class="sc-name">KCC Steel</div><div class="sc-sub">Korea·KRW·도장사급</div></div><span class="badge b-blue">사급추천</span></div><div class="sc-price">$74,100</div><div class="sc-inco">국내납품 · 충실도 100%</div>
+      <div class="sc-br"><span class="sc-bl">가격</span><div class="sc-bw"><div class="sc-bf" style="width:91%;background:var(--blue)"></div></div><span style="font-size:8px;font-weight:500">91</span></div>
+      <div class="sc-br"><span class="sc-bl">충실도</span><div class="sc-bw"><div class="sc-bf" style="width:100%;background:var(--blue)"></div></div><span style="font-size:8px;font-weight:500">100</span></div>
+      <div class="sc-br"><span class="sc-bl">Budget</span><div class="sc-bw"><div class="sc-bf" style="width:95%;background:var(--green)"></div></div><span style="font-size:8px;font-weight:500;color:var(--green)">95</span></div>
+      <div class="sc-br"><span class="sc-bl">이상알람</span><div class="sc-bw"><div class="sc-bf" style="width:100%;background:var(--green)"></div></div><span style="font-size:8px;font-weight:500;color:var(--green)">없음</span></div>
+      <div class="sc-tot"><span class="sc-tl">종합</span><span class="sc-tv" style="color:var(--blue)">96</span></div>
+    </div>
+    <div class="sc-card"><div class="sc-top"><div><div class="sc-name">Hyundai Steel</div><div class="sc-sub">Korea·KRW·일괄</div></div><span class="badge b-gray">2위</span></div><div class="sc-price">$428,190</div><div class="sc-inco">FOB Incheon · 충실도 84%</div>
+      <div class="sc-br"><span class="sc-bl">가격</span><div class="sc-bw"><div class="sc-bf" style="width:82%;background:#888"></div></div><span style="font-size:8px;font-weight:500">82</span></div>
+      <div class="sc-br"><span class="sc-bl">충실도</span><div class="sc-bw"><div class="sc-bf" style="width:84%;background:#888"></div></div><span style="font-size:8px;font-weight:500">84</span></div>
+      <div class="sc-br"><span class="sc-bl">Budget</span><div class="sc-bw"><div class="sc-bf" style="width:78%;background:#888"></div></div><span style="font-size:8px;font-weight:500">78</span></div>
+      <div class="sc-br"><span class="sc-bl">이상알람</span><div class="sc-bw"><div class="sc-bf" style="width:100%;background:var(--green)"></div></div><span style="font-size:8px;font-weight:500;color:var(--green)">없음</span></div>
+      <div class="sc-tot"><span class="sc-tl">종합</span><span class="sc-tv" style="color:#888">79</span></div>
+    </div>
+    <div class="sc-card"><div class="sc-top"><div><div class="sc-name">JFE Steel</div><div class="sc-sub">Japan·JPY·일괄</div></div><span class="badge b-gray">3위</span></div><div class="sc-price">$481,010</div><div class="sc-inco">CIF Doha · 충실도 79%</div>
+      <div class="sc-br"><span class="sc-bl">가격</span><div class="sc-bw"><div class="sc-bf" style="width:55%;background:#888"></div></div><span style="font-size:8px;font-weight:500">55</span></div>
+      <div class="sc-br"><span class="sc-bl">충실도</span><div class="sc-bw"><div class="sc-bf" style="width:79%;background:#888"></div></div><span style="font-size:8px;font-weight:500">79</span></div>
+      <div class="sc-br"><span class="sc-bl">Budget</span><div class="sc-bw"><div class="sc-bf" style="width:20%;background:var(--red)"></div></div><span style="font-size:8px;font-weight:500;color:var(--red)">▲초과</span></div>
+      <div class="sc-br"><span class="sc-bl">이상알람</span><div class="sc-bw"><div class="sc-bf" style="width:100%;background:var(--green)"></div></div><span style="font-size:8px;font-weight:500;color:var(--green)">없음</span></div>
+      <div class="sc-tot"><span class="sc-tl">종합</span><span class="sc-tv" style="color:#aaa">58</span></div>
+    </div>
+  </div>
+  <table class="tbl" style="margin-bottom:12px">
+    <thead><tr><th>순위</th><th>업체</th><th>역할</th><th class="r">총금액(USD)</th><th class="c">충실도</th><th>Incoterms</th><th class="c">Budget대비</th><th class="c">이상단가</th><th>유의사항</th></tr></thead>
+    <tbody>
+      <tr style="background:var(--greenL)"><td style="color:var(--green);font-weight:500">🥇</td><td style="font-weight:500">Baosteel</td><td><span class="badge b-green">일괄 1위</span></td><td class="r" style="color:var(--green);font-weight:500">$389,650</td><td class="c" style="color:var(--green)">100%</td><td>FOB Shanghai</td><td class="c" style="color:var(--green)">▼ 절감</td><td class="c" style="color:var(--red)">⚠1건</td><td style="font-size:10px">Fab.pipe rack Query 확인</td></tr>
+      <tr style="background:var(--blueL)"><td style="color:var(--blue);font-weight:500">★</td><td style="font-weight:500">POSCO</td><td><span class="badge b-blue">형강사급</span></td><td class="r" style="color:var(--blue);font-weight:500">$641,800</td><td class="c" style="color:var(--green)">100%</td><td>FOB Busan</td><td class="c" style="color:var(--green)">▼5.6%</td><td class="c" style="color:var(--green)">없음</td><td style="font-size:10px">강판 PQ 승인 확인</td></tr>
+      <tr style="background:var(--blueL)"><td style="color:var(--blue);font-weight:500">★</td><td style="font-weight:500">KCC Steel</td><td><span class="badge b-blue">도장사급</span></td><td class="r" style="color:var(--blue);font-weight:500">$74,100</td><td class="c" style="color:var(--green)">100%</td><td>국내납품</td><td class="c" style="color:var(--green)">▼5.0%</td><td class="c" style="color:var(--green)">없음</td><td style="font-size:10px">도장 사양 재확인</td></tr>
+      <tr><td style="color:#aaa">2위</td><td>Hyundai Steel</td><td><span class="badge b-gray">일괄</span></td><td class="r">$428,190</td><td class="c" style="color:var(--amber)">84.2%</td><td>FOB Incheon</td><td class="c" style="color:var(--amber)">▼소폭</td><td class="c" style="color:var(--green)">없음</td><td style="font-size:10px">3항목 누락 Query 대기</td></tr>
+      <tr><td style="color:#aaa">3위</td><td>JFE Steel</td><td><span class="badge b-gray">일괄</span></td><td class="r">$481,010</td><td class="c" style="color:var(--amber)">78.9%</td><td>CIF Doha</td><td class="c" style="color:var(--red)">▲+4.7%</td><td class="c" style="color:var(--green)">없음</td><td style="font-size:10px">Budget 초과, CIF 조건</td></tr>
+    </tbody>
+  </table>
+  <div style="padding:9px 13px;background:var(--greenL);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+    <div style="font-size:11px;font-weight:500;color:var(--greenD)">추천 조합: Baosteel외주일괄 + POSCO형강사급 + KCC도장사급 — Budget ▼$88,750 절감 (7.4%)</div>
+    <button class="btn prim" style="background:var(--green)">결재용 PDF 생성 📄</button>
+  </div>
+</div>
+
+<script>
+// ── 탭 전환 ──────────────────────────────────────────────────
+function go(idx,tab){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('s'+idx).classList.add('on');
+  if(tab) tab.classList.add('on'); else document.querySelectorAll('.tab')[idx].classList.add('on');
+}
+
+// ── 저장/초기화 액션 ─────────────────────────────────────────
+function saveMockup(){
+  alert('저장되었습니다.');
+}
+function confirmUploadReset(){
+  return confirm('현재 입력한 견적 비교 데이터가 초기화됩니다. 계속 진행하시겠습니까?');
+}
+
+// ── 공통 데이터 ──────────────────────────────────────────────
+const C={
+  green:'#3B6D11',greenL:'#EAF3DE',
+  blue:'#185FA5',blueL:'#E6F1FB',blueD:'#0C447C',
+  amber:'#BA7517',amberL:'#FAEEDA',
+  red:'#E24B4A',purple:'#534AB7',purpleL:'#EEEDFE',
+  surf:'#f7f5f0',bd:'#e0ddd6'
+};
+const TOTAL_QTY=850;
+
+const DR=[
+  {l1:'Ancillary steel works',l2:'Ancillary',l3:'Steel Ladder fabrication',unit:'m',qty:450,budget:12600,baosteel:27.5,hyundai:28.9,jfe:31.2,posco:null,kcc:null,splitM:false,splitP:false},
+  {l1:'',l2:'Ancillary',l3:'Handrail fabrication',unit:'m',qty:280,budget:8400,baosteel:26,hyundai:28,jfe:34,posco:null,kcc:null,splitM:false,splitP:false},
+  {l1:'',l2:'Ancillary',l3:'Grating fabrication',unit:'m²',qty:320,budget:22400,baosteel:66,hyundai:69.5,jfe:75,posco:null,kcc:null,splitM:false,splitP:false},
+  {l1:'Structure steel works',l2:'Shop Drawing',l3:'Shop drawing (일식)',unit:'ton',qty:850,budget:42500,baosteel:46,hyundai:52,jfe:58,posco:null,kcc:null,splitM:false,splitP:false},
+  {l1:'',l2:'Material Procurement',l3:'Steel for building/structure',unit:'ton',qty:620,budget:496000,baosteel:790,hyundai:820,jfe:860,posco:775,kcc:null,splitM:true,splitP:false},
+  {l1:'',l2:'Material Procurement',l3:'Steel for pipe rack',unit:'ton',qty:230,budget:184000,baosteel:785,hyundai:815,jfe:855,posco:770,kcc:null,splitM:true,splitP:false},
+  {l1:'',l2:'Fabrication',l3:'Steel for building/structure',unit:'ton',qty:620,budget:186000,baosteel:276,hyundai:290,jfe:312,posco:null,kcc:null,splitM:false,splitP:false},
+  {l1:'',l2:'Fabrication',l3:'Steel for pipe rack ⚠',unit:'ton',qty:230,budget:69000,baosteel:245,hyundai:315,jfe:385,posco:null,kcc:null,splitM:false,splitP:false,alarm:true},
+  {l1:'',l2:'Transportation',l3:'Steel for building',unit:'ton',qty:620,budget:31000,baosteel:42,hyundai:44.5,jfe:0,posco:null,kcc:null,splitM:false,splitP:false},
+  {l1:'',l2:'Transportation',l3:'Steel for pipe rack',unit:'ton',qty:230,budget:12000,baosteel:41,hyundai:43,jfe:0,posco:null,kcc:null,splitM:false,splitP:false},
+  {l1:'',l2:'Steel Painting',l3:'Blast clearing',unit:'m²',qty:4200,budget:21000,baosteel:4.8,hyundai:5.1,jfe:5.8,posco:null,kcc:4.6,splitM:false,splitP:true},
+  {l1:'',l2:'Steel Painting',l3:'Steel coating outdoor',unit:'m²',qty:3800,budget:57000,baosteel:14.5,hyundai:15.2,jfe:16.8,posco:null,kcc:14,splitM:false,splitP:true},
+  {l1:'',l2:'Steel Painting',l3:'Steel coating indoor',unit:'m²',qty:2200,budget:19800,baosteel:8.2,hyundai:8.8,jfe:9.5,posco:null,kcc:7.9,splitM:false,splitP:true},
+  {l1:'',l2:'Misc Material',l3:'High strength bolt',unit:'nos',qty:2400,budget:14400,baosteel:5.6,hyundai:5.8,jfe:6.5,posco:null,kcc:null,splitM:false,splitP:false},
+  {l1:'',l2:'Misc Material',l3:'Anchor bolt',unit:'nos',qty:2400,budget:14400,baosteel:5.8,hyundai:6,jfe:6.8,posco:null,kcc:null,splitM:false,splitP:false},
+];
+
+const SR=[
+  {name:'Ancillary steel works',unit:'ton',budget:43400,baosteel:38920,hyundai:41860,jfe:47200,posco:null,kcc:null,splitM:false,splitP:false},
+  {name:'Shop Drawing',unit:'ton',budget:42500,baosteel:39100,hyundai:44200,jfe:49300,posco:null,kcc:null,splitM:false,splitP:false},
+  {name:'Material Procurement 🔀',unit:'ton',budget:680000,baosteel:665150,hyundai:692050,jfe:727050,posco:641800,kcc:null,splitM:true,splitP:false},
+  {name:'Fabrication ⚠',unit:'ton',budget:255000,baosteel:227670,hyundai:252090,jfe:281950,posco:null,kcc:null,splitM:false,splitP:false,alarm:true},
+  {name:'Transportation',unit:'ton',budget:43000,baosteel:35510,hyundai:37785,jfe:0,posco:null,kcc:null,splitM:false,splitP:false,jfeCif:true},
+  {name:'Steel Painting 🎨',unit:'ton',budget:97800,baosteel:89900,hyundai:95380,jfe:107360,posco:null,kcc:81420,splitM:false,splitP:true},
+  {name:'Miscellaneous Material',unit:'ton',budget:28800,baosteel:27360,hyundai:28320,jfe:31920,posco:null,kcc:null,splitM:false,splitP:false},
+];
+
+// ── Budget% 렌더 ───────────────────────────────────────────
+function bpctHtml(actual,budget){
+  if(!actual||!budget) return '<span style="color:#ccc;font-size:10px">—</span>';
+  const pct=Math.round((actual/budget)*100);
+  const over=pct>100;
+  const col=over?C.red:pct>95?C.amber:C.green;
+  return `<div style="text-align:right"><div style="font-size:10px;font-weight:500;color:${col}">${pct}%</div><div style="font-size:9px;color:${col}">${over?'▲':'▼'} ${Math.abs(pct-100)}%</div></div>`;
+}
+
+// ── ⑤ 견적 비교표 렌더링 ──────────────────────────────────
+const BULK_COLS=[
+  {key:'baosteel',name:'Baosteel\n①일괄 1위',color:C.green},
+  {key:'hyundai',name:'Hyundai\n②일괄 2위',color:C.blue},
+  {key:'jfe',name:'JFE Steel\n③일괄 3위',color:C.amber},
+];
+const SPLIT_MAT_COLS=[...BULK_COLS.map(c=>({...c,name:c.name.replace('1위','일괄').replace('2위','일괄').replace('3위','일괄')})),
+  {key:'posco',name:'POSCO\n형강사급',color:C.purple,isSplit:true,splitType:'mat'}];
+const SPLIT_PAINT_COLS=[...BULK_COLS.map(c=>({...c,name:c.name.replace('1위','일괄').replace('2위','일괄').replace('3위','일괄')})),
+  {key:'kcc',name:'KCC Steel\n도장사급',color:C.purple,isSplit:true,splitType:'paint'}];
+const SPLIT_ALL_COLS=[...BULK_COLS.map(c=>({...c,name:c.name.replace('1위','일괄').replace('2위','일괄').replace('3위','일괄')})),
+  {key:'posco',name:'POSCO\n형강사급',color:C.purple,isSplit:true,splitType:'mat'},
+  {key:'kcc',name:'KCC Steel\n도장사급',color:C.purple,isSplit:true,splitType:'paint'}];
+const PROCUREMENT_MODES={
+  outsource_bulk:{label:'외주일괄',base:'외주일괄',mat:false,paint:false,colMode:'bulk'},
+  fab_delivery:{label:'철골 제작/납품',base:'철골 제작/납품',mat:false,paint:false,colMode:'bulk'},
+  outsource_shape:{label:'외주일괄+형강사급',base:'외주일괄',mat:true,paint:false,colMode:'split_mat'},
+  fab_shape:{label:'철골 제작/납품+형강사급',base:'철골 제작/납품',mat:true,paint:false,colMode:'split_mat'},
+  outsource_shape_paint:{label:'외주일괄+형강사급+도장사급',base:'외주일괄',mat:true,paint:true,colMode:'split_all'},
+  fab_shape_paint:{label:'철골 제작/납품+형강사급+도장사급',base:'철골 제작/납품',mat:true,paint:true,colMode:'split_all'},
+  // 기존 내부 mode 호환용
+  bulk:{label:'외주일괄',base:'외주일괄',mat:false,paint:false,colMode:'bulk'},
+  split_mat:{label:'외주일괄+형강사급',base:'외주일괄',mat:true,paint:false,colMode:'split_mat'},
+  split_paint:{label:'외주일괄+도장사급',base:'외주일괄',mat:false,paint:true,colMode:'split_paint'},
+  split_all:{label:'외주일괄+형강사급+도장사급',base:'외주일괄',mat:true,paint:true,colMode:'split_all'},
+};
+function modeCfg(mode){return PROCUREMENT_MODES[mode]||PROCUREMENT_MODES.outsource_bulk;}
+function hasMatSupply(mode){return !!modeCfg(mode).mat;}
+function hasPaintSupply(mode){return !!modeCfg(mode).paint;}
+
+const BASE_SUPPLIERS=[
+  {key:'baosteel',name:'Baosteel',rank:'①'},
+  {key:'hyundai',name:'Hyundai Steel',rank:'②'},
+  {key:'jfe',name:'JFE Steel',rank:'③'}
+];
+const RECOMMEND_MODE_ORDER=['outsource_bulk','fab_delivery','outsource_shape','fab_shape','outsource_shape_paint','fab_shape_paint'];
+function scenarioTotal(baseKey,matSupply,paintSupply){
+  return SR.reduce((sum,row)=>{
+    if(matSupply&&row.splitM) return sum+(row.posco||0);
+    if(paintSupply&&row.splitP) return sum+(row.kcc||0);
+    return sum+(row[baseKey]||0);
+  },0);
+}
+function bestSupplierScenario(mode){
+  const cfg=modeCfg(mode);
+  const candidates=BASE_SUPPLIERS.map((s,idx)=>({
+    mode, cfg, supplier:s, order:idx,
+    amount:scenarioTotal(s.key,cfg.mat,cfg.paint)
+  }));
+  candidates.sort((a,b)=>a.amount-b.amount||a.order-b.order);
+  return candidates[0];
+}
+function bestProcurementScenario(){
+  const candidates=[];
+  RECOMMEND_MODE_ORDER.forEach((mode,modeOrder)=>{
+    const best=bestSupplierScenario(mode);
+    candidates.push({...best,modeOrder});
+  });
+  candidates.sort((a,b)=>a.amount-b.amount||a.modeOrder-b.modeOrder);
+  return candidates[0];
+}
+function comboText(best){
+  const parts=[best.supplier.name+' '+best.cfg.base];
+  if(best.cfg.mat) parts.push('POSCO 형강사급');
+  if(best.cfg.paint) parts.push('KCC Steel 도장사급');
+  return parts.join(' + ');
+}
+function renderRecommendation6(mode){
+  const el=document.getElementById('recommend-mode6');
+  if(!el) return;
+  const totBgt=SR.reduce((a,r)=>a+r.budget,0);
+  const best=bestProcurementScenario();
+  const selected=bestSupplierScenario(mode);
+  const bestPct=Math.round(best.amount/totBgt*1000)/10;
+  const saving=Math.max(0,totBgt-best.amount);
+  const selectedPct=Math.round(selected.amount/totBgt*1000)/10;
+  const selectedDiff=selected.amount-best.amount;
+  const selectedMsg=selectedDiff===0?'현재 선택 시나리오도 추천안과 동일합니다.':`현재 선택 시나리오는 추천안 대비 $${selectedDiff.toLocaleString()} 높습니다.`;
+  el.innerHTML=`
+    <div>
+      <div class="rec-kicker">추천 발주방식</div>
+      <div class="rec-title">${best.cfg.label}</div>
+      <div class="rec-meta">
+        <span class="rec-pill good">추천 조합: ${comboText(best)}</span>
+        <span class="rec-pill">Budget 대비 ${bestPct}%</span>
+        <span class="rec-pill good">절감 $${saving.toLocaleString()}</span>
+      </div>
+      <div class="rec-amount">
+        예상 총액 <strong style="color:${C.green}">$${best.amount.toLocaleString()}</strong><br>
+        현재 선택: <strong>${selected.cfg.label}</strong> / 최저 조합 <strong>${comboText(selected)}</strong> / Budget 대비 <strong>${selectedPct}%</strong><br>
+        <span style="color:${selectedDiff===0?C.green:C.amber}">${selectedMsg}</span>
+      </div>
+    </div>
+    <div class="rec-reason-box">
+      <div class="rec-reason-title">추천 사유</div>
+      <ul class="rec-reasons">
+        <li>6개 발주방식 비교 기준으로 총액이 가장 낮은 조합입니다.</li>
+        <li>형강과 도장을 사급 전환하여 주요 Cost Driver를 별도 경쟁력 있는 공급처로 분리할 수 있습니다.</li>
+        <li>외주일괄 기본 범위는 철골 제작/납품, 형강구매, 도료구매, 철골제작물 설치를 모두 포함하므로 수행 책임 관리가 명확합니다.</li>
+      </ul>
+      <div class="rec-note">주의: Baosteel Fabrication(pipe rack) 이상 단가는 Query 회신 확인 후 최종 확정이 필요합니다. 또한 현재 목업은 ‘철골 제작/납품’과 ‘외주일괄’의 설치비 차이 항목이 별도 분리되어 있지 않아, 실제 산식 적용 시 설치비/현장시공비 항목 추가가 필요합니다.</div>
+    </div>`;
+}
+
+const COLS5_MAP={bulk:BULK_COLS,split_mat:SPLIT_MAT_COLS,split_paint:SPLIT_PAINT_COLS,split_all:SPLIT_ALL_COLS};
+
+function render5(mode){
+  const cfg=modeCfg(mode);
+  const renderMode=cfg.colMode;
+  const cols=COLS5_MAP[renderMode];
+  const fixedW=[90,110,44,50,72];
+  const colW=renderMode==='split_all'?[56,68,50]:[58,72,54];
+
+  // colgroup
+  let cg='';
+  fixedW.forEach(w=>cg+=`<col style="width:${w}px"/>`);
+  cols.forEach(()=>colW.forEach(w=>cg+=`<col style="width:${w}px"/>`));
+  document.getElementById('cmp-cols').innerHTML=cg;
+
+  // thead row1 (rowspan on fixed cols) + row2 (sub-headers)
+  let r1=`<tr>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#999;text-align:left;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${C.surf};vertical-align:bottom">공종</th>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#999;text-align:left;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${C.surf};vertical-align:bottom">세부내역</th>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#999;text-align:center;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${C.surf};vertical-align:bottom">단위</th>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#999;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${C.surf};vertical-align:bottom">수량</th>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#27500A;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:#EAF3DE;vertical-align:bottom">Budget<br>(USD)</th>`;
+  cols.forEach(c=>{
+    const bg=c.isSplit?C.purple:C.surf;
+    const fc=c.isSplit?'#fff':'#333';
+    r1+=`<th colspan="3" style="font-size:10px;font-weight:500;color:${fc};text-align:center;padding:5px 4px 4px;border-bottom:0.5px solid ${C.bd};background:${bg};white-space:pre-line;line-height:1.35;border-left:2px solid ${c.color}">${c.name}</th>`;
+  });
+  r1+='</tr>';
+
+  let r2='<tr>';
+  cols.forEach(c=>{
+    const bg2=c.isSplit?'#f0eeff':C.surf;
+    const fc2=c.isSplit?C.purple:'#999';
+    r2+=`<th style="font-size:9px;font-weight:500;color:${fc2};text-align:center;padding:5px 6px;border-bottom:0.5px solid ${C.bd};background:${bg2};white-space:nowrap;border-left:2px solid ${c.color}">단가<br>(USD)</th>`;
+    r2+=`<th style="font-size:9px;font-weight:500;color:${fc2};text-align:right;padding:5px 6px;border-bottom:0.5px solid ${C.bd};background:${bg2};white-space:nowrap">금액<br>(USD)</th>`;
+    r2+=`<th style="font-size:9px;font-weight:500;color:${c.isSplit?C.purple:'#27500A'};text-align:right;padding:5px 6px;border-bottom:0.5px solid ${C.bd};background:${c.isSplit?'#f0eeff':'#EAF3DE'};white-space:nowrap">vs<br>Bgt%</th>`;
+  });
+  r2+='</tr>';
+  document.getElementById('cmp-thead').innerHTML=r1+r2;
+
+  // tbody
+  let lastL1=''; let html='';
+  const bgtTotal=DR.reduce((a,r)=>a+r.budget,0);
+
+  DR.forEach((row,i)=>{
+    if(row.l1&&row.l1!==lastL1){
+      lastL1=row.l1;
+      html+=`<tr style="background:${C.surf}"><td colspan="${5+cols.length*3}" style="padding:7px 8px;border-bottom:0.5px solid ${C.bd};font-size:11px;font-weight:500">${row.l1}</td></tr>`;
+    }
+    const isAlarm=row.alarm;
+    const isSM=row.splitM&&hasMatSupply(mode);
+    const isSP=row.splitP&&hasPaintSupply(mode);
+    const rowBg=isAlarm?'#fff8f0':isSM?'#f0f4ff':isSP?'#f4f0ff':'transparent';
+    const l2txt=row.l2+(isSM?' 🔀':isSP?' 🎨':'');
+
+    html+=`<tr style="background:${rowBg}">
+      <td style="font-size:10px;color:#888;padding:7px 8px;border-bottom:0.5px solid ${C.bd};padding-left:14px">${l2txt}</td>
+      <td style="font-size:11px;color:${isAlarm?C.amber:'#555'};padding:7px 8px;border-bottom:0.5px solid ${C.bd}">${row.l3}</td>
+      <td style="font-size:11px;text-align:center;padding:7px 8px;border-bottom:0.5px solid ${C.bd}">${row.unit}</td>
+      <td style="font-size:11px;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd}">${row.qty.toLocaleString()}</td>
+      <td style="font-size:11px;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:#EAF3DE;color:#27500A;font-weight:500">${row.budget.toLocaleString()}</td>`;
+
+    cols.forEach(c=>{
+      const skip=c.isSplit&&((c.splitType==='mat'&&!row.splitM)||(c.splitType==='paint'&&!row.splitP));
+      const up=skip?null:row[c.key];
+      const amt=(!skip&&up!=null)?Math.round(up*row.qty):null;
+      const bpct=amt?Math.round((amt/row.budget)*100):null;
+      const uTxt=skip?'—':up===0?'CIF포함':up!=null?up.toFixed(1):'—';
+      const aTxt=skip?'—':amt!=null?amt.toLocaleString():'—';
+      const uCol=skip?'#ccc':isAlarm&&c.key==='baosteel'?C.amber:c.color;
+      const aCol=skip?'#ccc':isAlarm&&c.key==='baosteel'?C.amber:'#333';
+      const bg2=c.isSplit?'#f8f7ff':rowBg||'transparent';
+      const bgP=c.isSplit?'#f0eeff':'#f8fef4';
+      html+=`<td style="padding:7px 6px;border-bottom:0.5px solid ${C.bd};text-align:center;font-size:10px;color:${uCol};border-left:2px solid ${c.color};background:${bg2}">${uTxt}</td>`;
+      html+=`<td style="padding:7px 8px;border-bottom:0.5px solid ${C.bd};text-align:right;font-size:10px;font-weight:500;color:${aCol};background:${bg2}">${aTxt}</td>`;
+      html+=`<td style="padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${bgP}">${skip||!bpct?'<span style="color:#ccc;font-size:10px">—</span>':bpctHtml(amt,row.budget)}</td>`;
+    });
+    html+='</tr>';
+  });
+
+  // 합계행
+  html+=`<tr style="background:${C.surf}">
+    <td colspan="4" style="padding:9px 8px;font-size:11px;font-weight:500;border-top:1px solid ${C.bd};border-bottom:0.5px solid ${C.bd}">합계 (USD)</td>
+    <td style="padding:9px 8px;text-align:right;background:#EAF3DE;color:#27500A;font-size:11px;font-weight:500;border-top:1px solid ${C.bd};border-bottom:0.5px solid ${C.bd}">${bgtTotal.toLocaleString()}</td>`;
+  cols.forEach(c=>{
+    const tot=DR.reduce((a,r)=>{
+      if(c.isSplit){if(c.splitType==='mat'&&r.splitM)return a+(r[c.key]||0)*r.qty;if(c.splitType==='paint'&&r.splitP)return a+(r[c.key]||0)*r.qty;return a;}
+      return a+(r[c.key]||0)*r.qty;
+    },0);
+    const totCol=c.key==='baosteel'?C.green:c.key==='posco'||c.key==='kcc'?C.purple:'#333';
+    const bg2=c.isSplit?'#f0eeff':C.surf;
+    html+=`<td style="padding:9px 6px;text-align:center;font-size:10px;color:#aaa;border-top:1px solid ${C.bd};border-bottom:0.5px solid ${C.bd};background:${bg2};border-left:2px solid ${c.color}">—</td>`;
+    html+=`<td style="padding:9px 8px;text-align:right;font-size:11px;font-weight:500;color:${totCol};border-top:1px solid ${C.bd};border-bottom:0.5px solid ${C.bd};background:${bg2}">${tot>0?'$'+tot.toLocaleString():'—'}</td>`;
+    html+=`<td style="padding:9px 8px;border-top:1px solid ${C.bd};border-bottom:0.5px solid ${C.bd};background:${c.isSplit?'#f0eeff':'#EAF3DE'}">${tot>0?bpctHtml(tot,bgtTotal):'—'}</td>`;
+  });
+  html+='</tr>';
+  document.getElementById('cmp-tbody').innerHTML=html;
+
+  // 통계
+  const totBao=DR.reduce((a,r)=>a+(r.baosteel||0)*r.qty,0);
+  const totBgt=bgtTotal;
+  document.getElementById('cmp-stats').innerHTML=`
+    <div class="stat"><div class="stat-l">일괄 가격 1위</div><div class="stat-v" style="font-size:14px;color:${C.green}">Baosteel</div><div style="font-size:10px;color:#aaa">$${totBao.toLocaleString()} · Bgt ${Math.round(totBao/totBgt*100)}%</div></div>
+    <div class="stat"><div class="stat-l">이상단가 알람</div><div class="stat-v" style="font-size:14px;color:${C.red}">1건</div><div style="font-size:10px;color:#aaa">Baosteel Fab.pipe rack</div></div>
+    <div class="stat"><div class="stat-l">POSCO 형강사급</div><div class="stat-v" style="font-size:14px;color:${C.purple}">$641,800</div><div style="font-size:10px;color:#aaa">형강 공종 적용</div></div>
+    <div class="stat"><div class="stat-l">KCC 도장사급</div><div class="stat-v" style="font-size:14px;color:${C.purple}">$81,420</div><div style="font-size:10px;color:#aaa">Painting 공종 적용</div></div>`;
+
+  // split info
+  const info=document.getElementById('split-info5');
+  if(!hasMatSupply(mode)&&!hasPaintSupply(mode)){info.style.display='none';}
+  else{
+    info.style.display='block';
+    const tags=[]; if(hasMatSupply(mode)) tags.push('<strong>형강사급</strong>'); if(hasPaintSupply(mode)) tags.push('<strong>도장사급</strong>');
+    info.innerHTML='ℹ '+cfg.label+' 시나리오: '+tags.join(' + ')+' 적용. 해당 공종만 사급/분리발주 업체 금액으로 교체 계산합니다. 수량은 전체 철골 수량 <strong>850 ton</strong> 기준. 단가 = 금액 ÷ 850 ton.';
+  }
+
+  document.getElementById('cmp-tbl').style.width=renderMode==='split_all'?'100%':'100%';
+}
+
+function setMode5(mode,btn){
+  document.querySelectorAll('#s4 .mode-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render5(mode);
+}
+
+// ── ⑥ Summary 렌더링 ─────────────────────────────────────
+function getAmt6(row,c){
+  if(!c.combo) return row[c.key]||0;
+  let amt=row[c.base]||0;
+  if(c.matKey&&row.splitM) amt=(row.splitM?(row[c.matKey]||0):(row[c.base]||0));
+  if(c.paintKey&&row.splitP) amt=row.splitP?(row[c.paintKey]||0):(row[c.base]||0);
+  if(c.matKey&&!c.paintKey) return row.splitM?(row[c.matKey]||0):(row[c.base]||0);
+  if(c.paintKey&&!c.matKey) return row.splitP?(row[c.paintKey]||0):(row[c.base]||0);
+  let r=row[c.base]||0;
+  if(row.splitM&&c.matKey) r=(row[c.matKey]||0);
+  if(row.splitP&&c.paintKey) r=row.splitP?(row[c.paintKey]||0):r;
+  return r;
+}
+const UP=(amt)=>amt?Math.round(amt/TOTAL_QTY):null;
+
+function buildSumCols(mode){
+  const cfg=modeCfg(mode);
+  const baseSub=cfg.base==='철골 제작/납품'?'제작/납품':'외주일괄';
+  const base=[
+    {key:'baosteel',label:'Baosteel',sub:'①'+baseSub,color:C.green},
+    {key:'hyundai',label:'Hyundai',sub:'②'+baseSub,color:C.blue},
+    {key:'jfe',label:'JFE Steel',sub:'③'+baseSub,color:C.amber},
+  ];
+  if(!hasMatSupply(mode)&&!hasPaintSupply(mode)) return base;
+  const ex=[];
+  if(hasMatSupply(mode)){
+    ex.push({key:'bao_posco',label:'①+POSCO형강',sub:'1위+형강사급',color:C.purple,combo:true,base:'baosteel',matKey:'posco'});
+    ex.push({key:'hyu_posco',label:'②+POSCO형강',sub:'2위+형강사급',color:C.purple,combo:true,base:'hyundai',matKey:'posco'});
+  }
+  if(hasPaintSupply(mode)){
+    ex.push({key:'bao_kcc',label:'①+KCC도장',sub:'1위+도장사급',color:'#8B5E8B',combo:true,base:'baosteel',paintKey:'kcc'});
+    ex.push({key:'hyu_kcc',label:'②+KCC도장',sub:'2위+도장사급',color:'#8B5E8B',combo:true,base:'hyundai',paintKey:'kcc'});
+  }
+  return [...base,...ex];
+}
+
+function render6(mode){
+  const cols=buildSumCols(mode);
+  const totBgt=SR.reduce((a,r)=>a+r.budget,0);
+  renderRecommendation6(mode);
+
+  // colgroup
+  let cg='<col style="width:160px"/><col style="width:40px"/><col style="width:50px"/><col style="width:72px"/><col style="width:60px"/>';
+  cols.forEach(()=>{cg+='<col style="width:58px"/><col style="width:70px"/><col style="width:52px"/>';});
+  document.getElementById('sum-cols').innerHTML=cg;
+
+  // thead
+  let r1=`<tr>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#999;text-align:left;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${C.surf};vertical-align:bottom">공종</th>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#999;text-align:center;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${C.surf};vertical-align:bottom">단위</th>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#999;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${C.surf};vertical-align:bottom">수량</th>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#27500A;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:#EAF3DE;vertical-align:bottom">Budget<br>(USD)</th>
+    <th rowspan="2" style="font-size:10px;font-weight:500;color:#27500A;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:#EAF3DE;vertical-align:bottom">Bgt단가<br>(USD/ton)</th>`;
+  cols.forEach(c=>{
+    const bg=c.combo?c.color:C.surf;
+    const fc=c.combo?'#fff':'#333';
+    r1+=`<th colspan="3" style="font-size:10px;font-weight:500;color:${fc};text-align:center;padding:5px 4px 4px;border-bottom:0.5px solid ${C.bd};background:${bg};line-height:1.35;border-left:2px solid ${c.color}">${c.label}<br><span style="font-size:9px;font-weight:400;opacity:.85">${c.sub}</span></th>`;
+  });
+  r1+='</tr>';
+  let r2='<tr>';
+  cols.forEach(c=>{
+    const bg2=c.combo?'#f0eeff':C.surf;
+    const fc2=c.combo?C.purple:'#999';
+    r2+=`<th style="font-size:9px;font-weight:500;color:${fc2};text-align:right;padding:5px 6px;border-bottom:0.5px solid ${C.bd};background:${bg2};white-space:nowrap;border-left:2px solid ${c.color}">단가<br>(USD/t)</th>`;
+    r2+=`<th style="font-size:9px;font-weight:500;color:${fc2};text-align:right;padding:5px 6px;border-bottom:0.5px solid ${C.bd};background:${bg2};white-space:nowrap">금액<br>(USD)</th>`;
+    r2+=`<th style="font-size:9px;font-weight:500;color:${c.combo?C.purple:'#27500A'};text-align:right;padding:5px 6px;border-bottom:0.5px solid ${C.bd};background:${c.combo?'#f0eeff':'#EAF3DE'};white-space:nowrap">vs<br>Bgt%</th>`;
+  });
+  r2+='</tr>';
+  document.getElementById('sum-thead').innerHTML=r1+r2;
+
+  // tbody
+  let html='';
+  SR.forEach((row,i)=>{
+    const isSM=row.splitM&&hasMatSupply(mode);
+    const isSP=row.splitP&&hasPaintSupply(mode);
+    const rowBg=row.alarm?'#fff8f0':isSM?'#f0f4ff':isSP?'#f4f0ff':i%2===0?C.surf:'transparent';
+    html+=`<tr style="background:${rowBg}">
+      <td style="font-size:11px;font-weight:500;padding:7px 8px;border-bottom:0.5px solid ${C.bd}">${row.name}${row.jfeCif?'<span style="font-size:9px;color:#888"> (JFE:CIF포함)</span>':''}</td>
+      <td style="font-size:11px;text-align:center;padding:7px 8px;border-bottom:0.5px solid ${C.bd}">${row.unit}</td>
+      <td style="font-size:11px;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd}">${TOTAL_QTY.toLocaleString()}</td>
+      <td style="font-size:11px;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:#EAF3DE;color:#27500A;font-weight:500">${row.budget.toLocaleString()}</td>
+      <td style="font-size:11px;text-align:right;padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:#EAF3DE;color:#27500A">${(UP(row.budget)||'').toLocaleString()}</td>`;
+    cols.forEach(c=>{
+      const amt=getAmt6(row,c);
+      const up=UP(amt)||0;
+      const bpct=amt?Math.round((amt/row.budget)*100):null;
+      const isHl=(c.combo&&c.matKey&&isSM)||(c.combo&&c.paintKey&&isSP);
+      const fc=isHl?c.color:c.key==='baosteel'?C.green:c.key==='hyundai'?C.blue:c.key==='jfe'?C.amber:'#333';
+      const bg2=c.combo?'#f8f7ff':'transparent';
+      html+=`<td style="padding:7px 8px;border-bottom:0.5px solid ${C.bd};text-align:right;font-size:10px;color:${fc};font-weight:${isHl?500:400};border-left:2px solid ${c.color};background:${bg2}">${amt?up.toLocaleString():'—'}</td>`;
+      html+=`<td style="padding:7px 8px;border-bottom:0.5px solid ${C.bd};text-align:right;font-size:10px;font-weight:500;color:${fc};background:${bg2}">${amt?'$'+amt.toLocaleString():'—'}</td>`;
+      html+=`<td style="padding:7px 8px;border-bottom:0.5px solid ${C.bd};background:${c.combo?'#f0eeff':'#f8fef4'}">${amt&&bpct?bpctHtml(amt,row.budget):'<span style="color:#ccc;font-size:10px">—</span>'}</td>`;
+    });
+    html+='</tr>';
+  });
+  // Grand Total
+  html+=`<tr style="background:${C.surf};border-top:1px solid ${C.bd}">
+    <td colspan="3" style="padding:9px 8px;font-size:12px;font-weight:500;border-bottom:0.5px solid ${C.bd}">Grand Total (USD)</td>
+    <td style="padding:9px 8px;text-align:right;background:#EAF3DE;color:#27500A;font-size:12px;font-weight:500;border-bottom:0.5px solid ${C.bd}">${totBgt.toLocaleString()}</td>
+    <td style="padding:9px 8px;text-align:right;background:#EAF3DE;color:#27500A;font-size:11px;border-bottom:0.5px solid ${C.bd}">${(UP(totBgt)||'').toLocaleString()}</td>`;
+  cols.forEach(c=>{
+    const tot=SR.reduce((a,r)=>a+(getAmt6(r,c)||0),0);
+    const fc=c.combo?c.color:c.key==='baosteel'?C.green:c.key==='hyundai'?C.blue:c.key==='jfe'?C.amber:'#333';
+    const bg2=c.combo?'#f0eeff':C.surf;
+    html+=`<td style="padding:9px 8px;text-align:right;font-size:11px;font-weight:500;color:${fc};border-bottom:0.5px solid ${C.bd};border-left:2px solid ${c.color};background:${bg2}">${(UP(tot)||'').toLocaleString()}</td>`;
+    html+=`<td style="padding:9px 8px;text-align:right;font-size:12px;font-weight:500;color:${fc};border-bottom:0.5px solid ${C.bd};background:${bg2}">$${tot.toLocaleString()}</td>`;
+    html+=`<td style="padding:9px 8px;border-bottom:0.5px solid ${C.bd};background:${c.combo?'#f0eeff':'#EAF3DE'}">${bpctHtml(tot,totBgt)}</td>`;
+  });
+  html+='</tr>';
+  document.getElementById('sum-tbody').innerHTML=html;
+
+  // split info
+  const info=document.getElementById('split-info6');
+  if(!hasMatSupply(mode)&&!hasPaintSupply(mode)){info.style.display='none';}
+  else{
+    const cfg=modeCfg(mode);
+    const tags=[]; if(hasMatSupply(mode)) tags.push('<strong>형강사급</strong>'); if(hasPaintSupply(mode)) tags.push('<strong>도장사급</strong>');
+    info.style.display='block';
+    info.innerHTML='ℹ '+cfg.label+' 시나리오: '+tags.join(' + ')+' 적용. 해당 공종만 사급/분리발주 업체 금액으로 교체 계산. 수량은 전체 철골 수량 <strong>850 ton</strong> 기준. 단가 = 금액 ÷ 850 ton.';
+  }
+
+  // scenario cards
+  const sc=document.getElementById('sum-scenario');
+  if(!hasMatSupply(mode)&&!hasPaintSupply(mode)){sc.style.display='none';return;}
+  sc.style.display='block';
+  const scenarios=[];
+  const cfg=modeCfg(mode);
+  const baseLabel=cfg.base==='철골 제작/납품'?'제작/납품':'외주일괄';
+  scenarios.push({label:'Baosteel '+baseLabel,amt:SR.reduce((a,r)=>a+(r.baosteel||0),0),color:C.green});
+  scenarios.push({label:'Hyundai '+baseLabel,amt:SR.reduce((a,r)=>a+(r.hyundai||0),0),color:C.blue});
+  if(hasMatSupply(mode)){
+    scenarios.push({label:'①+POSCO형강',amt:SR.reduce((a,r)=>a+(r.splitM?(r.posco||0):(r.baosteel||0)),0),color:C.purple});
+    scenarios.push({label:'②+POSCO형강',amt:SR.reduce((a,r)=>a+(r.splitM?(r.posco||0):(r.hyundai||0)),0),color:C.purple});
+  }
+  if(hasPaintSupply(mode)){
+    scenarios.push({label:'①+KCC도장',amt:SR.reduce((a,r)=>a+(r.splitP?(r.kcc||0):(r.baosteel||0)),0),color:'#8B5E8B'});
+    scenarios.push({label:'②+KCC도장',amt:SR.reduce((a,r)=>a+(r.splitP?(r.kcc||0):(r.hyundai||0)),0),color:'#8B5E8B'});
+  }
+  sc.innerHTML=`<div style="font-size:11px;font-weight:500;color:${C.blueD};margin-bottom:8px">📊 시나리오별 Grand Total 비교 (Budget $${totBgt.toLocaleString()})</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px">
+      ${scenarios.map(s=>{
+        const pct=Math.round((s.amt/totBgt)*100);const over=pct>100;
+        return `<div style="background:#fff;border-radius:7px;padding:9px 11px;border:0.5px solid ${s.color}33">
+          <div style="font-size:10px;color:#888;margin-bottom:2px">${s.label}</div>
+          <div style="font-size:13px;font-weight:500;color:${s.color}">$${s.amt.toLocaleString()}</div>
+          <div style="font-size:10px;color:${over?C.red:C.green};margin-top:2px">${over?'▲':'▼'} ${Math.abs(pct-100)}% (${pct}%)</div>
+          <div style="width:100%;height:3px;background:${C.bd};border-radius:3px;margin-top:5px;overflow:hidden"><div style="width:${Math.min(pct,120)/1.2}%;height:100%;background:${over?C.red:s.color};border-radius:3px"></div></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function setMode6(mode,btn){
+  document.querySelectorAll('#s5 .mode-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render6(mode);
+}
+
+// ── 초기 렌더링 ───────────────────────────────────────────
+render5('outsource_bulk');
+render6('outsource_bulk');
+</script>
+</body>
+</html>
