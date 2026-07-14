@@ -298,10 +298,10 @@ select,input{font-family:inherit;border-radius:10px!important}
     <div class="btns"><button class="btn">내보내기</button><button class="btn prim" onclick="go(1,document.querySelectorAll('.tab')[1])">+ 새 프로젝트</button></div>
   </div>
   <div class="stat-grid">
-    <div class="stat"><div class="stat-l">전체 프로젝트</div><div class="stat-v">12</div></div>
-    <div class="stat"><div class="stat-l">진행 중</div><div class="stat-v" style="color:var(--blue)">5</div></div>
-    <div class="stat"><div class="stat-l">Query 대기</div><div class="stat-v" style="color:var(--amber)">3</div></div>
-    <div class="stat"><div class="stat-l">완료</div><div class="stat-v" style="color:var(--green)">4</div></div>
+    <div class="stat"><div class="stat-l">전체 프로젝트</div><div class="stat-v" id="stat-total">-</div></div>
+    <div class="stat"><div class="stat-l">진행 중</div><div class="stat-v" id="stat-inprogress" style="color:var(--blue)">-</div></div>
+    <div class="stat"><div class="stat-l">Query 대기</div><div class="stat-v" id="stat-query-wait" style="color:var(--amber)">-</div></div>
+    <div class="stat"><div class="stat-l">완료</div><div class="stat-v" id="stat-done" style="color:var(--green)">-</div></div>
   </div>
   <div style="display:flex;gap:6px;margin-bottom:10px">
     <div style="flex:1;display:flex;align-items:center;gap:6px;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:5px 10px">
@@ -312,47 +312,8 @@ select,input{font-family:inherit;border-radius:10px!important}
   </div>
   <table class="tbl">
     <thead><tr><th>프로젝트명</th><th>자재</th><th>발주 범위</th><th>통화</th><th>업체</th><th>충실도</th><th>상태</th><th>수정일</th></tr></thead>
-    <tbody>
-      <tr style="cursor:pointer" onclick="go(4,document.querySelectorAll('.tab')[4])">
-        <td><div style="font-weight:500;font-size:12px">LNG Plant PJT — Qatar</div><div style="font-size:10px;color:#aaa">카타르 LNG 터미널</div></td>
-        <td><span class="badge b-purple">강구조 외주</span></td>
-        <td><span class="badge b-amber">분리발주 2건</span></td>
-        <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">USD</span></td>
-        <td style="font-size:11px">5개사</td>
-        <td><div class="pb-w"><div class="pb-f" style="width:88%;background:var(--blue)"></div></div><span style="font-size:10px">88%</span></td>
-        <td><span class="badge b-amber">진행 중</span></td>
-        <td style="font-size:10px;color:#aaa">2026.06.25</td>
-      </tr>
-      <tr style="cursor:pointer">
-        <td><div style="font-weight:500;font-size:12px">Offshore Platform — Malaysia</div><div style="font-size:10px;color:#aaa">말레이시아 해양플랫폼</div></td>
-        <td><span class="badge b-purple">강구조 외주</span></td>
-        <td><span class="badge b-gray">일괄 발주</span></td>
-        <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">USD</span></td>
-        <td style="font-size:11px">6개사</td>
-        <td><div class="pb-w"><div class="pb-f" style="width:95%;background:var(--blue)"></div></div><span style="font-size:10px">95%</span></td>
-        <td><span class="badge b-green">완료</span></td>
-        <td style="font-size:10px;color:#aaa">2026.05.10</td>
-      </tr>
-      <tr style="cursor:pointer">
-        <td><div style="font-weight:500;font-size:12px">Refinery PJT — Saudi Arabia</div><div style="font-size:10px;color:#aaa">사우디 정유 플랜트</div></td>
-        <td><span class="badge b-blue">Carbon Plate</span></td>
-        <td><span class="badge b-gray">일괄 발주</span></td>
-        <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">USD</span></td>
-        <td style="font-size:11px">3개사</td>
-        <td><div class="pb-w"><div class="pb-f" style="width:60%;background:var(--amber)"></div></div><span style="font-size:10px">60%</span></td>
-        <td><span class="badge b-red">Query 대기</span></td>
-        <td style="font-size:10px;color:#aaa">2026.06.20</td>
-      </tr>
-      <tr style="cursor:pointer">
-        <td><div style="font-weight:500;font-size:12px">FPSO PJT — Singapore</div><div style="font-size:10px;color:#aaa">싱가포르 FPSO</div></td>
-        <td><span class="badge b-green">Stainless Steel</span></td>
-        <td><span class="badge b-amber">분리발주 1건</span></td>
-        <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">SGD</span></td>
-        <td style="font-size:11px">4개사</td>
-        <td><div class="pb-w"><div class="pb-f" style="width:100%;background:var(--green)"></div></div><span style="font-size:10px">100%</span></td>
-        <td><span class="badge b-green">완료</span></td>
-        <td style="font-size:10px;color:#aaa">2026.04.15</td>
-      </tr>
+    <tbody id="project-list-body">
+      <tr><td colspan="8" style="text-align:center;padding:20px;color:#98A2B3;font-size:12px">불러오는 중…</td></tr>
     </tbody>
   </table>
 </div>
@@ -372,25 +333,25 @@ select,input{font-family:inherit;border-radius:10px!important}
   </div>
   <div class="card">
     <div class="card-hd"><div class="card-hd-ico" style="background:var(--blueL)">📋</div><div><div class="card-hd-t">프로젝트 기본 정보</div></div></div>
-    <div style="margin-bottom:9px"><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">프로젝트명 *</label><input value="LNG Plant PJT — Qatar" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
+    <div style="margin-bottom:9px"><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">프로젝트명 *</label><input id="proj-name" placeholder="예: LNG Plant PJT — Qatar" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px">
-      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">발주처 / 국가 *</label><input value="Qatar Petroleum / Qatar" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
-      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">견적 마감일</label><input value="2026.07.15" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
+      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">발주처 / 국가 *</label><input id="proj-client-country" placeholder="예: Qatar Petroleum / Qatar" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
+      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">견적 마감일</label><input id="proj-bid-due" placeholder="예: 2026.07.15" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
     </div>
     <label style="font-size:10px;color:#888;display:block;margin-bottom:5px">자재 구분 *</label>
-    <div style="display:flex;gap:5px">
-      <div style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">Carbon Plate</div>
-      <div style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">Stainless Steel</div>
-      <div style="flex:1;border:0.5px solid var(--blue);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--blueL);color:var(--blueD);font-weight:500">강구조 외주</div>
-      <div style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">복합</div>
+    <div id="material-group" style="display:flex;gap:5px">
+      <div class="material-opt" data-material="Carbon Plate" onclick="selectMaterial(this)" style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">Carbon Plate</div>
+      <div class="material-opt" data-material="Stainless Steel" onclick="selectMaterial(this)" style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">Stainless Steel</div>
+      <div class="material-opt" data-material="강구조 외주" data-selected="true" onclick="selectMaterial(this)" style="flex:1;border:0.5px solid var(--blue);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--blueL);color:var(--blueD);font-weight:500">강구조 외주</div>
+      <div class="material-opt" data-material="복합" onclick="selectMaterial(this)" style="flex:1;border:0.5px solid var(--bd);border-radius:7px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surf);color:#666">복합</div>
     </div>
   </div>
   <div class="card">
     <div class="card-hd"><div class="card-hd-ico" style="background:var(--blueL)">💱</div><div><div class="card-hd-t">기준 통화 및 프로젝트 환율</div></div></div>
     <div style="background:var(--blueL);border-radius:7px;padding:8px 11px;margin-bottom:11px;font-size:11px;color:var(--blueD)">ℹ 프로젝트 환율은 재무팀 확인 후 입력하고 환율 기준일을 반드시 기재해 주세요.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px">
-      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">기준 통화 *</label><select style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"><option>USD (미국 달러)</option><option>SGD</option><option>KRW</option></select></div>
-      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">환율 기준일 *</label><input value="2026.06.27" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
+      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">기준 통화 *</label><select id="proj-base-currency" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"><option>USD (미국 달러)</option><option>SGD</option><option>KRW</option></select></div>
+      <div><label style="font-size:10px;color:#888;display:block;margin-bottom:3px">환율 기준일 *</label><input id="proj-fx-date" placeholder="예: 2026.06.27" style="width:100%;background:var(--surf);border:0.5px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:12px"/></div>
     </div>
     <table class="tbl">
       <thead><tr><th>견적 통화</th><th>국가</th><th class="r">1단위 → USD</th></tr></thead>
@@ -413,7 +374,7 @@ select,input{font-family:inherit;border-radius:10px!important}
       <div class="scope-item"><div class="scope-top"><span class="scope-name">Miscellaneous Material</span><div class="scope-opts"><span class="scope-opt on">일괄</span><span class="scope-opt">분리</span></div></div><div class="scope-sub">고력볼트·앵커볼트</div></div>
     </div>
   </div>
-  <div style="display:flex;justify-content:flex-end;gap:6px"><button class="btn">취소</button><button class="btn prim" onclick="go(2,document.querySelectorAll('.tab')[2])">다음: BOQ 등록 →</button></div>
+  <div style="display:flex;justify-content:flex-end;gap:6px"><button class="btn" onclick="go(0,document.querySelectorAll('.tab')[0])">취소</button><button class="btn prim" id="proj-save-btn" onclick="saveProjectAndContinue(this)">저장 후 다음: BOQ 등록 →</button></div>
 </div>
 
 <!-- ③ BOQ 관리 -->
@@ -1327,11 +1288,144 @@ function renderAIResults(target,panel,data){
   panel.innerHTML=html;
 }
 
+// ── Supabase 연동 (① 프로젝트 목록 / ② 프로젝트 생성 전용) ──
+const SUPABASE_URL='https://dagwmahrdkycsuzleyqs.supabase.co/rest/v1';
+const SUPABASE_KEY='sb_publishable_8_u3I53BqEfvw7JDL6tkYA_qba-9Fsz';
+function sbHeaders(extra){
+  return Object.assign({
+    'apikey':SUPABASE_KEY,
+    'Authorization':'Bearer '+SUPABASE_KEY,
+    'Content-Type':'application/json'
+  },extra||{});
+}
+async function sbSelect(table,query){
+  const resp=await fetch(`${SUPABASE_URL}/${table}?${query}`,{headers:sbHeaders()});
+  if(!resp.ok){ throw new Error(await resp.text()); }
+  return resp.json();
+}
+async function sbInsert(table,row){
+  const resp=await fetch(`${SUPABASE_URL}/${table}`,{
+    method:'POST',
+    headers:sbHeaders({'Prefer':'return=representation'}),
+    body:JSON.stringify(row)
+  });
+  if(!resp.ok){ throw new Error(await resp.text()); }
+  return resp.json();
+}
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function materialBadgeClass(m){
+  if(m==='강구조 외주') return 'b-purple';
+  if(m==='Carbon Plate') return 'b-blue';
+  if(m==='Stainless Steel') return 'b-green';
+  return 'b-gray';
+}
+function statusBadgeClass(s){
+  if(s==='완료') return 'b-green';
+  if(s==='Query 대기') return 'b-red';
+  return 'b-amber';
+}
+function fmtDate(s){
+  if(!s) return '-';
+  return String(s).slice(0,10).replace(/-/g,'.');
+}
+function toIsoDate(s){
+  const m=String(s||'').trim().match(/^(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})$/);
+  if(!m) return null;
+  return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+}
+
+function renderProjectRow(p){
+  const tr=document.createElement('tr');
+  tr.style.cursor='pointer';
+  tr.onclick=()=>go(4,document.querySelectorAll('.tab')[4]);
+  tr.innerHTML=`
+    <td><div style="font-weight:500;font-size:12px">${escapeHtml(p.project_name)}</div><div style="font-size:10px;color:#aaa">${escapeHtml(p.client_country)}</div></td>
+    <td><span class="badge ${materialBadgeClass(p.material_type)}">${escapeHtml(p.material_type||'-')}</span></td>
+    <td><span class="badge b-gray">${escapeHtml(p.order_scope||'미설정')}</span></td>
+    <td><span style="font-size:10px;background:var(--surf);border:0.5px solid var(--bd);border-radius:4px;padding:1px 5px;color:#666">${escapeHtml(p.base_currency||'-')}</span></td>
+    <td style="font-size:11px">${p.supplier_count!=null?p.supplier_count+'개사':'-'}</td>
+    <td>${p.completeness!=null?`<div class="pb-w"><div class="pb-f" style="width:${p.completeness}%;background:var(--blue)"></div></div><span style="font-size:10px">${p.completeness}%</span>`:'<span style="font-size:10px;color:#98A2B3">-</span>'}</td>
+    <td><span class="badge ${statusBadgeClass(p.status)}">${escapeHtml(p.status||'-')}</span></td>
+    <td style="font-size:10px;color:#aaa">${fmtDate(p.updated_at)}</td>`;
+  return tr;
+}
+function updateProjectStats(rows){
+  document.getElementById('stat-total').textContent=rows.length;
+  document.getElementById('stat-inprogress').textContent=rows.filter(r=>r.status==='진행 중').length;
+  document.getElementById('stat-query-wait').textContent=0;
+  document.getElementById('stat-done').textContent=rows.filter(r=>r.status==='완료').length;
+}
+async function loadProjects(){
+  const tbody=document.getElementById('project-list-body');
+  if(!tbody) return;
+  tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:#98A2B3;font-size:12px">불러오는 중…</td></tr>';
+  try{
+    const rows=await sbSelect('projects','select=*&order=created_at.desc');
+    if(!rows.length){
+      tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:#98A2B3;font-size:12px">등록된 프로젝트가 없습니다. "+ 새 프로젝트"를 눌러 추가해보세요.</td></tr>';
+    }else{
+      tbody.innerHTML='';
+      rows.forEach(p=>tbody.appendChild(renderProjectRow(p)));
+    }
+    updateProjectStats(rows);
+  }catch(e){
+    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:20px;color:#B42318;font-size:12px">불러오기 실패: ${escapeHtml(e.message)}<br>Supabase projects 테이블이 생성되어 있는지 확인해주세요.</td></tr>`;
+  }
+}
+
+// ── ② 프로젝트 생성 폼 ─────────────────────────────────────
+function selectMaterial(el){
+  document.querySelectorAll('#material-group .material-opt').forEach(o=>{
+    o.removeAttribute('data-selected');
+    o.style.border='0.5px solid var(--bd)';
+    o.style.background='var(--surf)';
+    o.style.color='#666';
+    o.style.fontWeight='normal';
+  });
+  el.setAttribute('data-selected','true');
+  el.style.border='0.5px solid var(--blue)';
+  el.style.background='var(--blueL)';
+  el.style.color='var(--blueD)';
+  el.style.fontWeight='500';
+}
+function getSelectedMaterial(){
+  const on=document.querySelector('#material-group .material-opt[data-selected="true"]');
+  return on?on.dataset.material:'강구조 외주';
+}
+async function saveProjectAndContinue(btn){
+  const name=(document.getElementById('proj-name').value||'').trim();
+  if(!name){ alert('프로젝트명을 입력해주세요.'); return; }
+  const payload={
+    project_name:name,
+    client_country:(document.getElementById('proj-client-country').value||'').trim(),
+    material_type:getSelectedMaterial(),
+    base_currency:(document.getElementById('proj-base-currency').value||'USD').split(' ')[0],
+    exchange_rate_date:toIsoDate(document.getElementById('proj-fx-date').value),
+    bid_due_date:toIsoDate(document.getElementById('proj-bid-due').value),
+    status:'진행 중'
+  };
+  const origLabel=btn.textContent;
+  btn.disabled=true;btn.textContent='저장 중…';
+  try{
+    await sbInsert('projects',payload);
+    await loadProjects();
+    go(2,document.querySelectorAll('.tab')[2]);
+  }catch(e){
+    alert('프로젝트 저장에 실패했습니다.\n'+e.message);
+  }finally{
+    btn.disabled=false;btn.textContent=origLabel;
+  }
+}
+
 // ── 초기 렌더링 ───────────────────────────────────────────
 render5('outsource_bulk');
 render6('outsource_bulk');
 renderAlarmBanner();
 initDynamicQueryDraft();
+loadProjects();
 </script>
 </body>
 </html>
