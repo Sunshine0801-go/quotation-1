@@ -245,6 +245,26 @@ select,input{font-family:inherit;border-radius:10px!important}
 #s0 select{min-height:34px;background:#fff!important;color:#475467!important;font-weight:700}
 #s0 input{font-weight:600;color:#1D2939}
 
+/* ── AI 견적 분석 ── */
+.btn.ai{background:linear-gradient(135deg,#F0EEFF 0%,#F7F5FF 100%);color:var(--purpleD);border-color:#DAD6FF;font-weight:800}
+.btn.ai:hover{background:#E9E5FF;border-color:#C3BAF9}
+.btn.ai:disabled{opacity:.6;cursor:wait}
+.ai-panel{border:1px solid var(--bd2);border-radius:16px;padding:16px 18px;margin:0 0 16px;background:linear-gradient(135deg,#FBFAFF 0%,#FFFFFF 60%);box-shadow:var(--shadow-sm)}
+.ai-panel-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;font-weight:850;color:var(--purpleD)}
+.ai-loading{font-size:12px;color:var(--subtle)}
+.ai-error{font-size:12px;color:#B42318;background:var(--redL);border:1px solid #F4C7C5;border-radius:10px;padding:10px 12px;line-height:1.6}
+.ai-sub-t{font-size:12px;font-weight:850;color:#1D2939;margin:12px 0 6px}
+.ai-list{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.ai-list li{font-size:11.5px;color:#344054;line-height:1.6;display:flex;gap:6px;align-items:flex-start;background:#fff;border:1px solid var(--bd2);border-radius:10px;padding:7px 10px}
+.tag-uncertain{font-size:9.5px;font-weight:850;background:var(--amberL);color:var(--amberD);border:1px solid #F8DCA8;border-radius:999px;padding:1px 7px;flex-shrink:0;white-space:nowrap}
+.tag-confirmed{font-size:9.5px;font-weight:850;background:var(--greenL);color:var(--greenD);border:1px solid #CBE9D5;border-radius:999px;padding:1px 7px;flex-shrink:0;white-space:nowrap}
+.ai-rec-card{border:1px solid var(--bd2);border-radius:14px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.ai-rec-card.r1{border-color:#B9D5F2;box-shadow:0 8px 18px rgba(30,91,159,.08)}
+.ai-rec-title{font-size:13px;font-weight:850;color:#111827;margin-bottom:4px}
+.ai-rec-meta{font-size:11px;color:#475467;margin-bottom:8px}
+.query-en-box{background:#F8FAFC;border:1px solid #EEF2F6;border-radius:10px;padding:9px 11px;margin-top:6px;font-size:11px;line-height:1.6;white-space:pre-line;color:#344054;font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace}
+.ai-footnote{margin-top:10px;padding-top:10px;border-top:1px dashed var(--bd2);font-size:10.5px;color:#667085;line-height:1.6}
+
 /* 반응형 */
 @media(max-width:1100px){.score-grid{grid-template-columns:repeat(3,1fr)}.stat-grid{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:190px 1fr}}
 @media(max-width:760px){.topbar-note{display:none}.tabs{top:58px;padding:0 8px}.screen{padding:16px}.row-hd{align-items:flex-start;flex-direction:column}.btns{width:100%;justify-content:flex-start}.score-grid{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.scope-grid{grid-template-columns:1fr}.step-bar{overflow-x:auto}.stat-grid{grid-template-columns:1fr}.info-bar span{min-width:120px}.tbl{font-size:12px}}
@@ -498,7 +518,7 @@ select,input{font-family:inherit;border-radius:10px!important}
     <span><span class="il">JPY</span><span class="iv">0.00650</span></span>
     <span><span class="il">Budget</span><span class="iv" style="color:var(--blue)">표시 중 👁</span></span>
   </div>
-  <div class="alarm"><span>⚠</span><span><strong>이상 단가:</strong> Baosteel — Fabrication(pipe rack) USD 245/ton — 2위(Hyundai USD 315) 대비 <strong>22.2% 저렴 → Query 발행 권장</strong></span></div>
+  <div class="alarm" id="alarm5"><span>⚠</span><span><strong>이상 단가:</strong> Baosteel — Fabrication(pipe rack) USD 205/ton — 2위(Hyundai USD 315) 대비 <strong>34.9% 저렴 → Query 발행 권장</strong></span></div>
 
   <div class="mode-tabs">
     <span style="font-size:11px;color:#888;margin-right:4px">발주 방식:</span>
@@ -526,8 +546,9 @@ select,input{font-family:inherit;border-radius:10px!important}
 <div class="screen" id="s5">
   <div class="row-hd">
     <div><div class="bc">LNG Plant PJT — Qatar &gt; 견적 비교 Summary</div><div class="pg-t">⑥ 견적 비교 Summary — 공종별</div></div>
-    <div class="btns"><button class="btn">📊 엑셀</button><button class="btn">📄 PDF</button><button class="btn save" onclick="saveMockup()">💾 저장</button><button class="btn prim" onclick="go(6,document.querySelectorAll('.tab')[6])">Query 관리 →</button></div>
+    <div class="btns"><button class="btn">📊 엑셀</button><button class="btn">📄 PDF</button><button class="btn save" onclick="saveMockup()">💾 저장</button><button class="btn ai" id="ai-btn-summary" onclick="runAIAnalysis('summary')">🤖 AI 견적 분석</button><button class="btn prim" onclick="go(6,document.querySelectorAll('.tab')[6])">Query 관리 →</button></div>
   </div>
+  <div id="ai-panel-summary" class="ai-panel" style="display:none"></div>
   <div class="sc-tabs">
     <span style="font-size:11px;color:#888;margin-right:4px">발주 시나리오:</span>
     <button class="mode-tab on" onclick="setMode6('outsource_bulk',this)">외주일괄</button>
@@ -572,14 +593,15 @@ select,input{font-family:inherit;border-radius:10px!important}
   <div class="q-card">
     <div class="q-card-h"><span class="badge b-red">⚠ 이상 단가</span><span style="flex:1;font-size:12px;font-weight:500;margin-left:4px">Baosteel — Fabrication(pipe rack) 단가 확인</span><span class="badge b-amber">초안 대기</span></div>
     <div class="q-card-b">
-      <div class="q-meta"><span>업체: <strong>Baosteel (China)</strong></span><span>항목: <strong>Fabrication Steel for pipe rack</strong></span><span>이슈: <strong>2위 대비 22.2% 저렴</strong></span></div>
-      <div class="q-draft">Dear Baosteel,
+      <div class="q-meta"><span>업체: <strong>Baosteel (China)</strong></span><span>항목: <strong>Fabrication Steel for pipe rack</strong></span><span>이슈: <strong>2위 대비 34.9% 저렴</strong></span></div>
+      <div class="q-draft" id="q-draft-abnormal">Dear Baosteel,
 
-We noted your unit price for Fabrication (Steel for pipe rack) is USD 245/ton, which is 22.2% lower than the next lowest offer (Hyundai: USD 315). Please confirm:
+We noted your unit price for Fabrication (Steel for pipe rack) is USD 205/ton, which is 34.9% lower than the next lowest offer (Hyundai: USD 315). Please confirm:
 1. Is the quoted price correct and final?
-2. Clarify if any scope items are excluded.
+2. Please clarify if any scope items are excluded from this price.
 
-Best regards, [담당자명] / Global Steel Structure Procurement</div>
+Best regards,
+[담당자명] / Global Steel Structure Procurement</div>
       <div class="q-acts"><button class="btn" style="font-size:10px;padding:3px 8px">✏ 수정</button><button class="btn" style="font-size:10px;padding:3px 8px">📋 복사</button><button class="btn prim" style="font-size:10px;padding:3px 8px">발송 완료로 변경</button></div>
     </div>
   </div>
@@ -615,8 +637,9 @@ Your quotation did not include pricing for Anchor bolt and Common bolt. Please p
 <div class="screen" id="s7">
   <div class="row-hd">
     <div><div class="bc">LNG Plant PJT — Qatar &gt; 추천 대시보드</div><div class="pg-t">⑧ 최적 업체 추천 대시보드</div></div>
-    <div class="btns"><button class="btn">📊 엑셀</button><button class="btn">📄 결재용 PDF</button><button class="btn prim">📤 보고서 공유</button></div>
+    <div class="btns"><button class="btn">📊 엑셀</button><button class="btn">📄 결재용 PDF</button><button class="btn ai" id="ai-btn-dashboard" onclick="runAIAnalysis('dashboard')">🤖 AI 견적 분석</button><button class="btn prim">📤 보고서 공유</button></div>
   </div>
+  <div id="ai-panel-dashboard" class="ai-panel" style="display:none"></div>
   <div class="hero-card">
     <div class="hero-ico">🏆</div>
     <div style="flex:1">
@@ -719,7 +742,7 @@ const DR=[
   {l1:'',l2:'Material Procurement',l3:'Steel for building/structure',unit:'ton',qty:620,budget:496000,baosteel:790,hyundai:820,jfe:860,posco:775,kcc:null,splitM:true,splitP:false},
   {l1:'',l2:'Material Procurement',l3:'Steel for pipe rack',unit:'ton',qty:230,budget:184000,baosteel:785,hyundai:815,jfe:855,posco:770,kcc:null,splitM:true,splitP:false},
   {l1:'',l2:'Fabrication',l3:'Steel for building/structure',unit:'ton',qty:620,budget:186000,baosteel:276,hyundai:290,jfe:312,posco:null,kcc:null,splitM:false,splitP:false},
-  {l1:'',l2:'Fabrication',l3:'Steel for pipe rack ⚠',unit:'ton',qty:230,budget:69000,baosteel:245,hyundai:315,jfe:385,posco:null,kcc:null,splitM:false,splitP:false,alarm:true},
+  {l1:'',l2:'Fabrication',l3:'Steel for pipe rack ⚠',unit:'ton',qty:230,budget:69000,baosteel:205,hyundai:315,jfe:385,posco:null,kcc:null,splitM:false,splitP:false,alarm:true},
   {l1:'',l2:'Transportation',l3:'Steel for building',unit:'ton',qty:620,budget:31000,baosteel:42,hyundai:44.5,jfe:0,posco:null,kcc:null,splitM:false,splitP:false},
   {l1:'',l2:'Transportation',l3:'Steel for pipe rack',unit:'ton',qty:230,budget:12000,baosteel:41,hyundai:43,jfe:0,posco:null,kcc:null,splitM:false,splitP:false},
   {l1:'',l2:'Steel Painting',l3:'Blast clearing',unit:'m²',qty:4200,budget:21000,baosteel:4.8,hyundai:5.1,jfe:5.8,posco:null,kcc:4.6,splitM:false,splitP:true},
@@ -733,7 +756,7 @@ const SR=[
   {name:'Ancillary steel works',unit:'ton',budget:43400,baosteel:38920,hyundai:41860,jfe:47200,posco:null,kcc:null,splitM:false,splitP:false},
   {name:'Shop Drawing',unit:'ton',budget:42500,baosteel:39100,hyundai:44200,jfe:49300,posco:null,kcc:null,splitM:false,splitP:false},
   {name:'Material Procurement 🔀',unit:'ton',budget:680000,baosteel:665150,hyundai:692050,jfe:727050,posco:641800,kcc:null,splitM:true,splitP:false},
-  {name:'Fabrication ⚠',unit:'ton',budget:255000,baosteel:227670,hyundai:252090,jfe:281950,posco:null,kcc:null,splitM:false,splitP:false,alarm:true},
+  {name:'Fabrication ⚠',unit:'ton',budget:255000,baosteel:218270,hyundai:252090,jfe:281950,posco:null,kcc:null,splitM:false,splitP:false,alarm:true},
   {name:'Transportation',unit:'ton',budget:43000,baosteel:35510,hyundai:37785,jfe:0,posco:null,kcc:null,splitM:false,splitP:false,jfeCif:true},
   {name:'Steel Painting 🎨',unit:'ton',budget:97800,baosteel:89900,hyundai:95380,jfe:107360,posco:null,kcc:81420,splitM:false,splitP:true},
   {name:'Miscellaneous Material',unit:'ton',budget:28800,baosteel:27360,hyundai:28320,jfe:31920,posco:null,kcc:null,splitM:false,splitP:false},
@@ -1135,9 +1158,180 @@ function setMode6(mode,btn){
   render6(mode);
 }
 
+// ── 이상 단가 판정 (2번째 최저가 대비 30% 이상 저렴) ──────────
+const ABNORMAL_THRESHOLD_PCT=30;
+function detectAbnormalItems(){
+  const items=[];
+  DR.forEach(row=>{
+    const candidates=[
+      {name:'Baosteel',price:row.baosteel},
+      {name:'Hyundai Steel',price:row.hyundai},
+      {name:'JFE Steel',price:row.jfe}
+    ].filter(c=>c.price!=null&&c.price>0);
+    if(candidates.length<2) return;
+    candidates.sort((a,b)=>a.price-b.price);
+    const lowest=candidates[0],second=candidates[1];
+    const pctCheaper=Math.round(((second.price-lowest.price)/second.price*100)*10)/10;
+    if(pctCheaper>=ABNORMAL_THRESHOLD_PCT){
+      items.push({
+        boqItem:(row.l2?row.l2+' - ':'')+row.l3.replace(' ⚠',''),
+        unit:row.unit,
+        supplier:lowest.name,
+        unitPrice:lowest.price,
+        secondSupplier:second.name,
+        secondPrice:second.price,
+        pctCheaper
+      });
+    }
+  });
+  return items;
+}
+function buildAbnormalPriceQueryEN(item){
+  return `Dear ${item.supplier},
+
+We noted your unit price for ${item.boqItem} is USD ${item.unitPrice}/${item.unit}, which is ${item.pctCheaper}% lower than the next lowest offer (${item.secondSupplier}: USD ${item.secondPrice}/${item.unit}). Please confirm:
+1. Is the quoted price correct and final?
+2. Please clarify if any scope items are excluded from this price.
+
+Best regards,
+[담당자명] / Global Steel Structure Procurement`;
+}
+function renderAlarmBanner(){
+  const el=document.getElementById('alarm5');
+  if(!el) return;
+  const items=detectAbnormalItems();
+  if(items.length===0){
+    el.innerHTML='<span>✅</span><span>현재 기준(2위 대비 '+ABNORMAL_THRESHOLD_PCT+'% 이상 저렴) 이상 단가 알람 항목이 없습니다.</span>';
+    return;
+  }
+  const first=items[0];
+  el.innerHTML=`<span>⚠</span><span><strong>이상 단가:</strong> ${first.supplier} — ${first.boqItem} USD ${first.unitPrice}/${first.unit} — 2위(${first.secondSupplier} USD ${first.secondPrice}) 대비 <strong>${first.pctCheaper}% 저렴 → Query 발행 권장</strong>${items.length>1?` 외 ${items.length-1}건`:''}</span>`;
+}
+function initDynamicQueryDraft(){
+  const items=detectAbnormalItems();
+  const el=document.getElementById('q-draft-abnormal');
+  if(!el||items.length===0) return;
+  el.textContent=buildAbnormalPriceQueryEN(items[0]);
+}
+
+// ── 참여 업체 매칭 현황 (④ 견적 업로드·매칭 화면 데이터 기준) ──
+const MATCH_STATUS=[
+  {supplier:'Hyundai Steel',totalItems:19,matched:16,unitMismatch:2,missing:1,completeness:84.2,
+    issues:[
+      {type:'단위 불일치',item:'Transportation - Steel for pipe rack',detail:'견적 단위 m³ / BOQ 단위 ton'},
+      {type:'누락',item:'Anchor bolt',detail:'견적 미제출'}
+    ]},
+  {supplier:'JFE Steel',totalItems:19,matched:15,unitMismatch:0,missing:4,completeness:78.9,
+    issues:[{type:'누락',item:'Misc Material 2항목',detail:'견적 미제출'}]},
+  {supplier:'Baosteel',totalItems:19,matched:19,unitMismatch:0,missing:0,completeness:100,issues:[]},
+  {supplier:'POSCO (Material)',totalItems:2,matched:2,unitMismatch:0,missing:0,completeness:100,issues:[]},
+  {supplier:'KCC Steel (Painting)',totalItems:3,matched:3,unitMismatch:0,missing:0,completeness:100,issues:[]}
+];
+
+// ── AI 견적 분석 ───────────────────────────────────────────
+function currentSummaryMode(){
+  const on=document.querySelector('#s5 .mode-tab.on');
+  if(on){
+    const m=(on.getAttribute('onclick')||'').match(/setMode6\('([^']+)'/);
+    if(m) return m[1];
+  }
+  return 'outsource_bulk';
+}
+function buildAnalysisPayload(){
+  const mode=currentSummaryMode();
+  const cfg=modeCfg(mode);
+  const totBgt=SR.reduce((a,r)=>a+r.budget,0);
+  return{
+    project:'LNG Plant PJT — Qatar',
+    mode,
+    modeLabel:cfg.label,
+    budgetTotal:totBgt,
+    rows:DR.map(r=>({l1:r.l1,l2:r.l2,l3:r.l3,unit:r.unit,qty:r.qty,budget:r.budget,baosteel:r.baosteel,hyundai:r.hyundai,jfe:r.jfe,posco:r.posco,kcc:r.kcc})),
+    summaryRows:SR.map(r=>({name:r.name,unit:r.unit,budget:r.budget,baosteel:r.baosteel,hyundai:r.hyundai,jfe:r.jfe,posco:r.posco,kcc:r.kcc})),
+    matchStatus:MATCH_STATUS,
+    abnormalItems:detectAbnormalItems()
+  };
+}
+
+async function runAIAnalysis(target){
+  const btnId=target==='summary'?'ai-btn-summary':'ai-btn-dashboard';
+  const panelId=target==='summary'?'ai-panel-summary':'ai-panel-dashboard';
+  const btn=document.getElementById(btnId);
+  const panel=document.getElementById(panelId);
+  if(!panel) return;
+  panel.style.display='block';
+  panel.innerHTML='<div class="ai-panel-hd">🤖 AI 견적 분석</div><div class="ai-loading">Claude API로 분석 중입니다…</div>';
+  if(btn){btn.disabled=true;btn.dataset.label=btn.dataset.label||btn.textContent;btn.textContent='분석 중…';}
+
+  try{
+    const payload=buildAnalysisPayload();
+    const resp=await fetch('/api/analyze-quotation',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    const data=await resp.json();
+    if(!resp.ok){
+      panel.innerHTML='<div class="ai-panel-hd">🤖 AI 견적 분석</div><div class="ai-error">'+((data&&data.error)||'분석 요청이 실패했습니다.')+'<br>※ 이 기능은 Vercel에 배포되고 ANTHROPIC_API_KEY 환경변수가 설정되어 있어야 동작합니다.</div>';
+      return;
+    }
+    renderAIResults(target,panel,data);
+  }catch(e){
+    panel.innerHTML='<div class="ai-panel-hd">🤖 AI 견적 분석</div><div class="ai-error">네트워크 오류로 분석 요청에 실패했습니다. Vercel 배포 환경에서 다시 시도해주세요.</div>';
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=btn.dataset.label;}
+  }
+}
+
+function renderAIResults(target,panel,data){
+  const missing=data.missingOrErrorItems||[];
+  const abnormal=data.abnormalPriceItems||[];
+  const recs=data.recommendations||[];
+  const notes=data.notes||[];
+
+  let html='<div class="ai-panel-hd">🤖 AI 견적 분석 결과</div>';
+
+  if(target==='summary'){
+    html+='<div class="ai-sub-t">📋 누락·오류 리스트</div>';
+    if(missing.length===0){
+      html+='<div style="font-size:11.5px;color:#667085">누락 또는 오류로 확인된 항목이 없습니다.</div>';
+    }else{
+      html+='<ul class="ai-list">'+missing.map(m=>{
+        const conf=m.confidence==='확인 필요'?'tag-uncertain':'tag-confirmed';
+        return `<li><span class="${conf}">${m.confidence||'확인 필요'}</span><span><strong>[${m.type||'기타'}]</strong> ${m.supplier||''} — ${m.boqItem||''}<br><span style="color:#667085">${m.detail||''}</span></span></li>`;
+      }).join('')+'</ul>';
+    }
+    if(abnormal.length){
+      html+='<div class="ai-sub-t">⚠ 이상 단가 항목 &amp; Query 초안 (영문)</div>';
+      html+=abnormal.map(a=>`<div class="ai-rec-card"><div class="ai-rec-title">${a.supplier} — ${a.boqItem}</div><div class="ai-rec-meta">USD ${a.unitPrice} vs ${a.secondSupplier} USD ${a.secondPrice} (${a.pctCheaper}% 저렴)</div><div class="query-en-box">${(a.queryDraftEn||'').replace(/</g,'&lt;')}</div></div>`).join('');
+    }
+  }else{
+    html+='<div class="ai-sub-t">🏆 추천 발주방식 (2안)</div>';
+    html+=recs.map(r=>{
+      const varPct=r.budgetVariancePct||0;
+      const varTxt=varPct>0?`▲+${Math.abs(varPct)}%`:`▼${Math.abs(varPct)}%`;
+      return `<div class="ai-rec-card ${r.rank===1?'r1':''}"><div class="ai-rec-title">${r.rank}안 — ${r.procurementMode||''} · ${r.supplierCombo||''}</div><div class="ai-rec-meta">예상 총액 $${(r.expectedTotalUsd||0).toLocaleString()} · Budget 대비 ${varTxt}</div><ul class="ai-list">${(r.reasons||[]).map(x=>`<li>${x}</li>`).join('')}</ul>${(r.cautions&&r.cautions.length)?'<div class="ai-sub-t" style="margin-top:8px">유의사항</div><ul class="ai-list">'+r.cautions.map(x=>`<li><span class="tag-uncertain">확인 필요</span>${x}</li>`).join('')+'</ul>':''}</div>`;
+    }).join('');
+    if(abnormal.length){
+      html+='<div class="ai-sub-t">⚠ 이상 단가 Query 초안 (영문)</div>';
+      html+=abnormal.map(a=>`<div class="query-en-box">${(a.queryDraftEn||'').replace(/</g,'&lt;')}</div>`).join('');
+    }
+  }
+
+  if(notes.length){
+    html+='<div class="ai-footnote">'+notes.map(n=>`※ ${n}`).join('<br>')+'</div>';
+  }else{
+    html+='<div class="ai-footnote">※ 본 분석은 AI 참고 의견이며, 최종 발주방식 및 협력사 선정은 담당 Buyer의 권한입니다.</div>';
+  }
+
+  panel.innerHTML=html;
+}
+
 // ── 초기 렌더링 ───────────────────────────────────────────
 render5('outsource_bulk');
 render6('outsource_bulk');
+renderAlarmBanner();
+initDynamicQueryDraft();
 </script>
 </body>
 </html>
