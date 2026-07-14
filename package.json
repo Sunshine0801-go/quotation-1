@@ -1,0 +1,9 @@
+{
+  "name": "steelbid-comparator",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SteelBid Comparator v2.0 — 견적 비교 시스템 (정적 화면 + AI 견적 분석 API)",
+  "engines": {
+    "node": ">=18"
+  }
+}
